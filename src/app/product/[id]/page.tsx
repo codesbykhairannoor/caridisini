@@ -172,7 +172,7 @@ export default async function ProductDetailPage({
               </div>
 
               <h1 style={{ 
-                fontSize: 'clamp(1.4rem, 4vw, 1.75rem)', 
+                fontSize: 'clamp(1.5rem, 4vw, 2rem)', 
                 fontWeight: '900', 
                 lineHeight: '1.2', 
                 marginBottom: '16px', 
@@ -206,11 +206,11 @@ export default async function ProductDetailPage({
               <div className="show-tablet-price" style={{ marginBottom: '40px', padding: '24px', background: 'white', border: '1px solid #f1f5f9', borderRadius: '20px' }}>
                   <p style={{ fontSize: '0.9rem', color: '#64748b', marginBottom: '8px', fontWeight: '600' }}>Harga Terbaik:</p>
                   <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px', flexWrap: 'wrap' }}>
-                    <span style={{ fontSize: 'clamp(2rem, 5vw, 2.5rem)', fontWeight: '800', color: 'var(--primary)', letterSpacing: '-1.5px', lineHeight: '1.1' }}>
+                    <span style={{ fontSize: 'clamp(1.75rem, 5vw, 2.15rem)', fontWeight: '800', color: 'var(--primary)', letterSpacing: '-1.5px', lineHeight: '1.1' }}>
                       Rp {product.price}
                     </span>
                     {product.originalPrice && (
-                      <span style={{ fontSize: '1.25rem', color: '#94a3b8', textDecoration: 'line-through' }}>
+                      <span style={{ fontSize: '1.1rem', color: '#94a3b8', textDecoration: 'line-through' }}>
                         Rp {product.originalPrice}
                       </span>
                     )}
@@ -245,7 +245,7 @@ export default async function ProductDetailPage({
               <div style={{ marginBottom: '28px' }}>
                 <p style={{ fontSize: '0.85rem', color: '#64748b', marginBottom: '10px', fontWeight: '600' }}>Harga Spesial:</p>
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px', flexWrap: 'wrap' }}>
-                  <span style={{ fontSize: 'clamp(1.75rem, 3vw, 2.25rem)', fontWeight: '900', color: 'var(--primary)', letterSpacing: '-1.5px', lineHeight: '1.1' }}>
+                  <span style={{ fontSize: 'clamp(1.5rem, 3vw, 1.9rem)', fontWeight: '900', color: 'var(--primary)', letterSpacing: '-1.5px', lineHeight: '1.1' }}>
                     Rp {product.price}
                   </span>
                   {product.originalPrice && (
