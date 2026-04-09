@@ -363,6 +363,8 @@ export default async function ProductDetailPage({
       <div 
         className="show-mobile fixed-bottom-bar animate-fade-up" 
         style={{ 
+          display: 'flex',
+          position: 'fixed',
           padding: '16px 20px', 
           gap: '24px', 
           alignItems: 'center',
