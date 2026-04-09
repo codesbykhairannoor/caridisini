@@ -135,28 +135,30 @@ export default async function ProductDetailPage({
                </button>
             </div>
 
-            {/* Trust Badges - Moved here */}
-            <div className="hide-mobile" style={{ 
+            {/* Trust Badges */}
+            <div style={{ 
               display: 'flex', 
-              flexDirection: 'column',
-              gap: '16px', 
+              flexDirection: 'row',
+              flexWrap: 'wrap',
+              gap: '12px', 
               background: '#f8fafc', 
-              padding: '20px', 
-              borderRadius: '24px',
-              border: '1px solid #f1f5f9'
-            }}>
-              <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-                <ShieldCheck size={20} color="#0ea5e9" />
+              padding: '12px 16px', 
+              borderRadius: '20px',
+              border: '1px solid #f1f5f9',
+              marginTop: '16px'
+            }} className="trust-badges-container">
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flex: '1 1 140px' }}>
+                <ShieldCheck size={18} color="#0ea5e9" />
                 <div>
-                  <p style={{ fontSize: '0.8rem', fontWeight: '800' }}>Original 100%</p>
-                  <p style={{ fontSize: '0.7rem', color: '#64748b' }}>Jaminan uang kembali</p>
+                  <p style={{ fontSize: '0.75rem', fontWeight: '800' }}>Original 100%</p>
+                  <p style={{ fontSize: '0.65rem', color: '#64748b' }}>Jaminan uang kembali</p>
                 </div>
               </div>
-              <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-                <Truck size={20} color="var(--primary)" />
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flex: '1 1 140px' }}>
+                <Truck size={18} color="var(--primary)" />
                 <div>
-                  <p style={{ fontSize: '0.8rem', fontWeight: '800' }}>Gratis Ongkir</p>
-                  <p style={{ fontSize: '0.7rem', color: '#64748b' }}>Ke seluruh Indonesia</p>
+                  <p style={{ fontSize: '0.75rem', fontWeight: '800' }}>Gratis Ongkir</p>
+                  <p style={{ fontSize: '0.65rem', color: '#64748b' }}>Ke seluruh Indonesia</p>
                 </div>
               </div>
             </div>
@@ -357,6 +359,33 @@ export default async function ProductDetailPage({
         </section>
       </div>
 
+      {/* Mobile Fixed Buy Bar */}
+      <div 
+        className="show-mobile fixed-bottom-bar animate-fade-up" 
+        style={{ 
+          padding: '16px 20px', 
+          gap: '24px', 
+          alignItems: 'center',
+          background: 'rgba(255, 255, 255, 0.85)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          borderTop: '1px solid rgba(238, 77, 45, 0.1)',
+          boxShadow: '0 -10px 40px rgba(0,0,0,0.05)',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          zIndex: 1000
+        }}
+      >
+          <div style={{ flex: 1.2 }}>
+            <p style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: '700', marginBottom: '2px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Harga Terbaik</p>
+            <p style={{ fontSize: 'clamp(1.1rem, 4.5vw, 1.35rem)', fontWeight: '900', color: 'var(--primary)', lineHeight: '1.1' }}>Rp {product.price}</p>
+          </div>
+          <div style={{ flex: 1.5 }}>
+            <PurchaseButton productId={productId} url={product.shopeeUrl} variant="compact" />
+          </div>
+      </div>
+
       <style dangerouslySetInnerHTML={{ __html: `
         @media (max-width: 1280px) {
           .product-main-grid {
@@ -386,19 +415,12 @@ export default async function ProductDetailPage({
           .content-col {
             gap: 24px !important;
           }
+          .trust-badges-container {
+             flex-direction: column !important;
+             gap: 12px !important;
+          }
         }
       `}} />
-
-      {/* Mobile Fixed Buy Bar */}
-      <div className="show-mobile fixed-bottom-bar" style={{ padding: '16px 20px', gap: '24px', alignItems: 'center' }}>
-          <div style={{ flex: 1.2 }}>
-            <p style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: '700', marginBottom: '2px' }}>Harga</p>
-            <p style={{ fontSize: 'clamp(1.1rem, 4.5vw, 1.35rem)', fontWeight: '900', color: 'var(--primary)', lineHeight: '1.1' }}>Rp {product.price}</p>
-          </div>
-          <div style={{ flex: 1.5 }}>
-            <PurchaseButton productId={productId} url={product.shopeeUrl} variant="compact" />
-          </div>
-      </div>
     </div>
   );
 }
