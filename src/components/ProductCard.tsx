@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Star, ShoppingCart, Eye } from 'lucide-react';
 import { trackProductClick } from '@/app/actions';
+import * as fpixel from '@/lib/fpixel';
 
 interface ProductProps {
   id: number;
@@ -30,6 +31,21 @@ export default function ProductCard({
     e.preventDefault();
     e.stopPropagation();
     trackProductClick(id);
+
+    // Track Facebook Pixel Event
+    fpixel.event('Purchase', {
+      value: parseFloat(price.replace(/\D/g, '')),
+      currency: 'IDR',
+      content_name: title,
+      content_ids: [id.toString()],
+      content_type: 'product'
+    });
+    
+    fpixel.event('ClickShopee', {
+      product_name: title,
+      product_id: id
+    });
+
     window.open(shopeeUrl, '_blank', 'noopener,noreferrer');
   };
 

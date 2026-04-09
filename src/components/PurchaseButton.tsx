@@ -2,16 +2,29 @@
 
 import { ShoppingBag } from "lucide-react";
 import { trackProductClick } from "@/app/actions";
+import * as fpixel from '@/lib/fpixel';
 
 interface PurchaseButtonProps {
   productId: number;
   url: string;
   variant?: 'default' | 'compact';
+  title?: string;
+  price?: string;
 }
 
-export default function PurchaseButton({ productId, url, variant = 'default' }: PurchaseButtonProps) {
+export default function PurchaseButton({ productId, url, variant = 'default', title, price }: PurchaseButtonProps) {
   const handleClick = () => {
     trackProductClick(productId);
+
+    // Track Facebook Pixel Event
+    fpixel.event('Purchase', {
+      value: price ? parseFloat(price.replace(/\D/g, '')) : 0,
+      currency: 'IDR',
+      content_name: title || 'Product Detail Purchase',
+      content_ids: [productId.toString()],
+      content_type: 'product'
+    });
+
     window.open(url, '_blank', 'noopener,noreferrer');
   };
 

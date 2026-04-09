@@ -6,6 +6,7 @@ import { ShoppingBag, ChevronRight, CheckCircle, Truck, ShieldCheck, Heart, Star
 import Link from "next/link";
 import CollapsibleDescription from "@/components/CollapsibleDescription";
 import PurchaseButton from "@/components/PurchaseButton";
+import PixelViewContent from "@/components/PixelViewContent";
 
 export const revalidate = 3600; // Revalidate every hour
 
@@ -78,6 +79,12 @@ export default async function ProductDetailPage({
 
   return (
     <div style={{ backgroundColor: '#FBFCFE', minHeight: '100vh', paddingBottom: '120px', position: 'relative', overflowX: 'hidden' }}>
+      <PixelViewContent 
+        id={product.id} 
+        title={product.title} 
+        price={product.price} 
+        category={product.category?.name} 
+      />
       {/* Decorative Top Background */}
       <div style={{ 
         position: 'absolute', 
@@ -266,7 +273,7 @@ export default async function ProductDetailPage({
               </div>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                <PurchaseButton productId={productId} url={product.shopeeUrl} />
+                <PurchaseButton productId={productId} url={product.shopeeUrl} title={product.title} price={product.price} />
                 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', marginTop: '20px', borderTop: '1px solid #f1f5f9', paddingTop: '24px' }}>
                   <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
@@ -384,7 +391,7 @@ export default async function ProductDetailPage({
             <p style={{ fontSize: 'clamp(1.1rem, 4.5vw, 1.35rem)', fontWeight: '900', color: 'var(--primary)', lineHeight: '1.1' }}>Rp {product.price}</p>
           </div>
           <div style={{ flex: 1.5 }}>
-            <PurchaseButton productId={productId} url={product.shopeeUrl} variant="compact" />
+            <PurchaseButton productId={productId} url={product.shopeeUrl} variant="compact" title={product.title} price={product.price} />
           </div>
       </div>
 
