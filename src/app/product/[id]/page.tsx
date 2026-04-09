@@ -345,6 +345,7 @@ export default async function ProductDetailPage({
                 key={item.id}
                 id={item.id}
                 title={item.title}
+                description={item.description}
                 imageUrl={item.imageUrl}
                 price={item.price}
                 originalPrice={item.originalPrice}
