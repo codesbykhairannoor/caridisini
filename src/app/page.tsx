@@ -39,7 +39,7 @@ export default async function Home() {
             <div className="animate-breathe" style={{ marginBottom: '32px', display: 'flex', justifyContent: 'center' }}>
               <div style={{ position: 'relative', width: '80px', height: '80px' }}>
                 <Image 
-                  src="/caridisini_icon_pure_1775741024728.png" 
+                  src="/logo_premium.png" 
                   alt="caridisini premium icon" 
                   fill
                   style={{ objectFit: 'contain' }}
@@ -137,7 +137,7 @@ export default async function Home() {
         <footer style={{ padding: '60px 0', background: 'white', borderTop: '1px solid var(--border-color)' }}>
           <div className="container" style={{ textAlign: 'center' }}>
             <div style={{ marginBottom: '24px', opacity: 0.5 }}>
-               <Image src="/caridisini_icon_pure_1775741024728.png" alt="logo footer" width={32} height={32} style={{ margin: '0 auto' }} />
+               <Image src="/logo_premium.png" alt="logo footer" width={32} height={32} style={{ margin: '0 auto' }} />
             </div>
             <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', fontWeight: '500' }}>
               &copy; {new Date().getFullYear()} CariDisni Premium Katalog. Built for Shopping Enthusiasts.
