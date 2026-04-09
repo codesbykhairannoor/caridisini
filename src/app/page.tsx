@@ -1,7 +1,7 @@
 import Header from "@/components/Header";
 import ProductCard from "@/components/ProductCard";
 import prisma from "@/lib/prisma";
-import { Search, ShoppingBag, Sparkles, TrendingUp, Info, Target, Users, Mail, MessageCircle, Instagram } from "lucide-react";
+import { Search, ShoppingBag, Sparkles, TrendingUp, Info, Target, Users, Mail, MessageCircle, Camera } from "lucide-react";
 
 export const revalidate = 0;
 
@@ -141,7 +141,7 @@ export default async function Home() {
               <h2 style={{ fontSize: '2.5rem', fontWeight: '850', marginBottom: '40px' }}>Hubungi Kami</h2>
               <div style={{ display: 'flex', justifyContent: 'center', gap: '32px', flexWrap: 'wrap' }}>
                  <a href="#" style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--text-primary)', fontWeight: '600' }}>
-                    <Instagram size={24} /> Instagram
+                    <Camera size={24} /> Instagram
                  </a>
                  <a href="#" style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--text-primary)', fontWeight: '600' }}>
                     <MessageCircle size={24} /> WhatsApp
