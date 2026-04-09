@@ -1,4 +1,3 @@
-import Header from "@/components/Header";
 import ProductCard from "@/components/ProductCard";
 import prisma from "@/lib/prisma";
 import Image from "next/image";
@@ -18,7 +17,6 @@ export default async function Home() {
 
   return (
     <>
-      <Header />
       <main style={{ minHeight: '100vh', position: 'relative' }}>
         <div className="mesh-bg"></div>
 
