@@ -2,7 +2,7 @@ import Header from "@/components/Header";
 import ProductCard from "@/components/ProductCard";
 import prisma from "@/lib/prisma";
 import Image from "next/image";
-import { Search, TrendingUp } from "lucide-react";
+import { Search, TrendingUp, Sparkles, Zap, ShieldCheck } from "lucide-react";
 
 export const revalidate = 0;
 
@@ -19,60 +19,93 @@ export default async function Home() {
   return (
     <>
       <Header />
-      <main style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-        {/* Ultra-Minimalist Hero Section */}
-        <section className="hero-white-orange" style={{ padding: '40px 0 60px' }}>
-          <div className="container" style={{ textAlign: 'center' }}>
-            <div className="animate-fade-up" style={{ marginBottom: '24px', display: 'flex', justifyContent: 'center' }}>
-              <Image 
-                src="/logo.png" 
-                alt="caridisini logo" 
-                width={56} 
-                height={56} 
-                style={{ borderRadius: '14px', boxShadow: '0 8px 25px rgba(238, 77, 45, 0.15)' }}
-              />
+      <main style={{ minHeight: '100vh', position: 'relative' }}>
+        <div className="mesh-bg"></div>
+
+        {/* --- Premium Hero Section --- */}
+        <section style={{ padding: '80px 0 120px', position: 'relative', overflow: 'hidden' }}>
+          {/* Floating Decorative Badges */}
+          <div className="hide-mobile animate-float" style={{ position: 'absolute', top: '15%', left: '10%', background: 'white', padding: '10px 20px', borderRadius: '50px', boxShadow: 'var(--shadow-md)', display: 'flex', alignItems: 'center', gap: '8px', zIndex: 1 }}>
+            <Sparkles size={16} color="var(--primary)" />
+            <span style={{ fontSize: '0.8rem', fontWeight: '700' }}>Pilihan Editor</span>
+          </div>
+          <div className="hide-mobile animate-float" style={{ position: 'absolute', bottom: '20%', right: '12%', background: 'white', padding: '10px 20px', borderRadius: '50px', boxShadow: 'var(--shadow-md)', display: 'flex', alignItems: 'center', gap: '8px', zIndex: 1, animationDelay: '-2s' }}>
+            <Zap size={16} color="#FFD700" />
+            <span style={{ fontSize: '0.8rem', fontWeight: '700' }}>Flash Sale Live</span>
+          </div>
+
+          <div className="container" style={{ textAlign: 'center', position: 'relative', zIndex: 2 }}>
+            {/* Minimalist Logo Icon */}
+            <div className="animate-breathe" style={{ marginBottom: '32px', display: 'flex', justifyContent: 'center' }}>
+              <div style={{ position: 'relative', width: '80px', height: '80px' }}>
+                <Image 
+                  src="/caridisini_icon_pure_1775741024728.png" 
+                  alt="caridisini premium icon" 
+                  fill
+                  style={{ objectFit: 'contain' }}
+                />
+              </div>
             </div>
-            <h1 className="animate-fade-up" style={{ fontSize: 'clamp(1.75rem, 5vw, 2.5rem)', fontWeight: '850' }}>
-              Temukan Barang Impian di <span className="text-gradient-orange">CariDisini</span>
+
+            <h1 className="animate-fade-up" style={{ fontSize: 'clamp(2.5rem, 8vw, 4.5rem)', fontWeight: '900', lineHeight: '1.1', marginBottom: '24px' }}>
+              Temukan Barang Impian <br /> 
+              di <span className="text-gradient">CariDisini</span>
             </h1>
 
-            <div className="animate-fade-up" style={{ maxWidth: '680px', margin: '32px auto 0', position: 'relative' }}>
-              <div style={{ 
-                position: 'relative',
-                background: 'white',
-                borderRadius: '50px',
-                padding: '6px',
-                boxShadow: '0 25px 50px -12px rgba(238, 77, 45, 0.15)',
-                border: '1px solid var(--border-color)',
-                display: 'flex',
-                alignItems: 'center'
-              }}>
-                <div style={{ padding: '0 16px' }}>
-                  <Search size={20} color="var(--text-secondary)" />
-                </div>
-                <input 
-                  type="text" 
-                  placeholder="Cari barang berdiskon..." 
-                  className="input-field"
-                  style={{ border: 'none', padding: '12px 0', fontSize: '1rem', boxShadow: 'none', background: 'transparent' }}
-                />
-                <button className="btn btn-primary" style={{ borderRadius: '40px', padding: '12px 24px', fontSize: '0.9rem', fontWeight: '700' }}>
-                  Cari
-                </button>
-              </div>
+            <div className="animate-fade-up" style={{ maxWidth: '720px', margin: '48px auto 0' }}>
+               <div style={{ 
+                 position: 'relative',
+                 background: 'white',
+                 borderRadius: '100px',
+                 padding: '8px',
+                 boxShadow: '0 30px 60px -15px rgba(238, 77, 45, 0.2)',
+                 display: 'flex',
+                 alignItems: 'center',
+                 border: '1px solid rgba(238, 77, 45, 0.1)'
+               }}>
+                 <div style={{ paddingLeft: '24px', marginRight: '8px' }}>
+                   <Search size={22} color="var(--text-secondary)" />
+                 </div>
+                 <input 
+                   type="text" 
+                   placeholder="Cari barang berdiskon di Shopee..." 
+                   style={{ 
+                     border: 'none', 
+                     padding: '16px 0', 
+                     fontSize: '1.1rem', 
+                     width: '100%', 
+                     outline: 'none',
+                     background: 'transparent'
+                   }}
+                 />
+                 <button className="btn btn-primary" style={{ padding: '16px 36px', fontSize: '1rem' }}>
+                   Cari Sekarang
+                 </button>
+               </div>
+
+               {/* Trust Badges */}
+               <div className="animate-fade-up" style={{ display: 'flex', justifyContent: 'center', gap: '24px', marginTop: '32px', opacity: 0.7 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', fontWeight: '600' }}>
+                    <ShieldCheck size={14} /> Terverifikasi
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', fontWeight: '600' }}>
+                    <Zap size={14} /> Update Harian
+                  </div>
+               </div>
             </div>
           </div>
         </section>
 
-        {/* Product Grid Section */}
-        <section id="produk" className="container" style={{ paddingBottom: '100px', marginTop: '-20px', position: 'relative', zIndex: 10, flexGrow: 1 }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
-            <div>
-              <h2 style={{ fontSize: 'clamp(1.1rem, 4vw, 1.5rem)', fontWeight: '800' }}>🔥 Penawaran Hari Ini</h2>
+        {/* --- Product Grid Section --- */}
+        <section id="produk" className="container" style={{ paddingBottom: '120px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '40px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: 'var(--primary)', boxShadow: '0 0 10px var(--primary)' }}></div>
+              <h2 style={{ fontSize: '1.75rem', fontWeight: '800' }}>Penawaran Hari Ini</h2>
             </div>
-            <div className="hide-mobile" style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--primary)', fontWeight: '600', fontSize: '0.875rem' }}>
+            <div className="hide-mobile" style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--primary)', fontWeight: '700', fontSize: '0.9rem' }}>
               <TrendingUp size={18} />
-              Terlaris
+              Hot Recommendations
             </div>
           </div>
 
@@ -93,18 +126,23 @@ export default async function Home() {
               ))}
             </div>
           ) : (
-            <div style={{ textAlign: 'center', padding: '80px 0', background: 'var(--bg-card)', borderRadius: 'var(--radius-lg)', border: '1px solid var(--border-color)' }}>
-               <h3 style={{ fontSize: '1.25rem', marginBottom: '8px', fontWeight: '700' }}>Belum ada produk</h3>
-               <p style={{ color: 'var(--text-secondary)' }}>Cek kembali nanti!</p>
+            <div style={{ textAlign: 'center', padding: '100px 0', background: 'white', borderRadius: 'var(--radius-xl)', border: '1px solid var(--border-color)' }}>
+               <h3 style={{ fontSize: '1.5rem', marginBottom: '8px', fontWeight: '700' }}>Belum ada produk</h3>
+               <p style={{ color: 'var(--text-secondary)' }}>Kurasi produk terbaru sedang diproses!</p>
             </div>
           )}
         </section>
 
-        {/* Footer */}
-        <footer style={{ padding: '32px 0', textAlign: 'center', borderTop: '1px solid var(--border-color)', background: 'white' }}>
-           <p style={{ color: 'var(--text-secondary)', fontSize: '0.8rem' }}>
-              &copy; {new Date().getFullYear()} CariDisni. Semua hak cipta dilindungi.
-           </p>
+        {/* Minimalist Footer */}
+        <footer style={{ padding: '60px 0', background: 'white', borderTop: '1px solid var(--border-color)' }}>
+          <div className="container" style={{ textAlign: 'center' }}>
+            <div style={{ marginBottom: '24px', opacity: 0.5 }}>
+               <Image src="/caridisini_icon_pure_1775741024728.png" alt="logo footer" width={32} height={32} style={{ margin: '0 auto' }} />
+            </div>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', fontWeight: '500' }}>
+              &copy; {new Date().getFullYear()} CariDisni Premium Katalog. Built for Shopping Enthusiasts.
+            </p>
+          </div>
         </footer>
       </main>
     </>
