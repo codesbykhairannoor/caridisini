@@ -1,7 +1,7 @@
 import Header from "@/components/Header";
 import ProductCard from "@/components/ProductCard";
 import prisma from "@/lib/prisma";
-import { Search, TrendingUp, Target, Users, Mail, MessageCircle, Camera } from "lucide-react";
+import { Search, TrendingUp } from "lucide-react";
 
 export const revalidate = 0;
 
@@ -18,7 +18,7 @@ export default async function Home() {
   return (
     <>
       <Header />
-      <main>
+      <main style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
         {/* Ultra-Minimalist Hero Section */}
         <section className="hero-white-orange" style={{ padding: '40px 0 60px' }}>
           <div className="container" style={{ textAlign: 'center' }}>
@@ -55,7 +55,7 @@ export default async function Home() {
         </section>
 
         {/* Product Grid Section */}
-        <section id="produk" className="container" style={{ paddingBottom: '100px', marginTop: '-20px', position: 'relative', zIndex: 10 }}>
+        <section id="produk" className="container" style={{ paddingBottom: '100px', marginTop: '-20px', position: 'relative', zIndex: 10, flexGrow: 1 }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
             <div>
               <h2 style={{ fontSize: 'clamp(1.1rem, 4vw, 1.5rem)', fontWeight: '800' }}>🔥 Penawaran Hari Ini</h2>
@@ -87,46 +87,6 @@ export default async function Home() {
                <p style={{ color: 'var(--text-secondary)' }}>Cek kembali nanti!</p>
             </div>
           )}
-        </section>
-
-        {/* Tentang Section */}
-        <section id="tentang" style={{ background: 'white', padding: '80px 0', borderTop: '1px solid var(--border-color)' }}>
-          <div className="container" style={{ maxWidth: '1000px' }}>
-             <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-                <h2 style={{ fontSize: '2rem', fontWeight: '850', marginBottom: '12px' }}>Tentang CariDisni</h2>
-                <p style={{ color: 'var(--text-secondary)' }}>Destinasi kurasi produk Shopee terpercaya.</p>
-             </div>
-             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '32px' }}>
-                <div className="card" style={{ padding: '24px' }}>
-                   <Target className="text-primary" style={{ marginBottom: '16px' }} />
-                   <h3 style={{ marginBottom: '12px', fontSize: '1.1rem' }}>Visi Kami</h3>
-                   <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Menjadi jembatan utama antara pembeli cerdas dan penawaran terbaik di Shopee.</p>
-                </div>
-                <div className="card" style={{ padding: '24px' }}>
-                   <Users className="text-primary" style={{ marginBottom: '16px' }} />
-                   <h3 style={{ marginBottom: '12px', fontSize: '1.1rem' }}>Tim Ahli</h3>
-                   <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Dikelola oleh kurator belanja yang spesialis mencari diskon tersembunyi.</p>
-                </div>
-             </div>
-          </div>
-        </section>
-
-        {/* Kontak Section */}
-        <section id="kontak" style={{ padding: '80px 0', background: 'var(--bg-color)' }}>
-           <div className="container" style={{ textAlign: 'center' }}>
-              <h2 style={{ fontSize: '2rem', fontWeight: '850', marginBottom: '32px' }}>Hubungi Kami</h2>
-              <div style={{ display: 'flex', justifyContent: 'center', gap: '32px', flexWrap: 'wrap' }}>
-                 <a href="#" style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--text-primary)', fontWeight: '600' }}>
-                    <Camera size={24} /> Instagram
-                 </a>
-                 <a href="#" style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--text-primary)', fontWeight: '600' }}>
-                    <MessageCircle size={24} /> WhatsApp
-                 </a>
-                 <a href="mailto:info@caridisni.com" style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--text-primary)', fontWeight: '600' }}>
-                    <Mail size={24} /> Email
-                 </a>
-              </div>
-           </div>
         </section>
 
         {/* Footer */}
