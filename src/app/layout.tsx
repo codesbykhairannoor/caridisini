@@ -29,6 +29,8 @@ export const metadata: Metadata = {
   }
 };
 
+import NextTopLoader from 'nextjs-toploader';
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -36,7 +38,20 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="id" data-theme="light" style={{ scrollBehavior: 'smooth' }}>
-      <body>{children}</body>
+      <body>
+        <NextTopLoader 
+          color="#EE4D2D"
+          initialPosition={0.08}
+          crawlSpeed={200}
+          height={3}
+          crawl={true}
+          showSpinner={false}
+          easing="ease"
+          speed={200}
+          shadow="0 0 10px #EE4D2D,0 0 5px #EE4D2D"
+        />
+        {children}
+      </body>
     </html>
   );
 }

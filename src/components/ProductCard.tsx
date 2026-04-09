@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { Star, ShoppingCart } from 'lucide-react';
+import { Star, ShoppingCart, Eye } from 'lucide-react';
 import { trackProductClick } from '@/app/actions';
 
 interface ProductProps {
@@ -26,9 +26,17 @@ export default function ProductCard({
   shopeeUrl,
   categoryName,
 }: ProductProps) {
+  const handleShopeeClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    trackProductClick(id);
+    window.open(shopeeUrl, '_blank', 'noopener,noreferrer');
+  };
+
   return (
     <div className="card animate-fade-up" style={{ display: 'flex', flexDirection: 'column', height: '100%', position: 'relative', overflow: 'hidden' }}>
-      <Link href={`/product/${id}`} style={{ display: 'flex', flexDirection: 'column', height: '100%', textDecoration: 'none', color: 'inherit' }}>
+      {/* Upper clickable area to Detail Page */}
+      <Link href={`/product/${id}`} style={{ display: 'flex', flexDirection: 'column', flexGrow: 1, textDecoration: 'none', color: 'inherit' }}>
         {/* 1:1 Image Container */}
         <div style={{ 
           position: 'relative', 
@@ -103,7 +111,7 @@ export default function ProductCard({
             fontSize: 'clamp(0.9rem, 2.5vw, 1.1rem)', 
             fontWeight: '800', 
             marginBottom: '8px', 
-            color: 'var(--text-primary)',
+            color: '#0F172A',
             lineHeight: '1.2',
             display: '-webkit-box',
             WebkitLineClamp: '2',
@@ -131,7 +139,7 @@ export default function ProductCard({
           )}
           
           <div style={{ marginTop: 'auto' }}>
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginBottom: '4px' }}>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginBottom: '8px' }}>
               <span style={{ fontSize: 'clamp(1.1rem, 3.5vw, 1.4rem)', fontWeight: '900', color: 'var(--primary)', letterSpacing: '-0.5px' }}>
                 Rp {price}
               </span>
@@ -145,18 +153,44 @@ export default function ProductCard({
         </div>
       </Link>
       
-      <div style={{ padding: '0 16px 16px 16px' }}>
-        <a
-          href={shopeeUrl}
-          target="_blank"
-          rel="noopener noreferrer"
+      {/* Dual CTA Buttons */}
+      <div style={{ 
+        padding: '0 16px 16px 16px', 
+        display: 'flex', 
+        flexDirection: 'column', 
+        gap: '8px' 
+      }}>
+        <button
+          onClick={handleShopeeClick}
           className="btn btn-primary"
-          style={{ width: '100%', gap: '8px', padding: '12px 0' }}
-          onClick={() => trackProductClick(id)}
+          style={{ width: '100%', gap: '8px', padding: '10px 0', fontSize: '0.85rem' }}
         >
-          <ShoppingCart size={16} />
+          <ShoppingCart size={14} />
           Beli Sekarang
-        </a>
+        </button>
+        <Link 
+          href={`/product/${id}`}
+          style={{ 
+            width: '100%', 
+            padding: '10px 0', 
+            fontSize: '0.85rem', 
+            textAlign: 'center', 
+            border: '1px solid var(--border-color)', 
+            borderRadius: '50px',
+            color: 'var(--text-secondary)',
+            fontWeight: '700',
+            background: 'white',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '8px',
+            transition: 'all 0.2s'
+          }}
+          className="btn-hover-scale"
+        >
+          <Eye size={14} />
+          Lihat Detail
+        </Link>
       </div>
     </div>
   );

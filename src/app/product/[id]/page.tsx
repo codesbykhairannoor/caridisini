@@ -172,8 +172,8 @@ export default async function ProductDetailPage({
               </div>
 
               <h1 style={{ 
-                fontSize: 'clamp(1.5rem, 4vw, 2.25rem)', 
-                fontWeight: '800', 
+                fontSize: 'clamp(1.4rem, 4vw, 1.75rem)', 
+                fontWeight: '900', 
                 lineHeight: '1.2', 
                 marginBottom: '16px', 
                 color: '#0F172A',
@@ -185,7 +185,7 @@ export default async function ProductDetailPage({
               {/* Social Proof Row */}
               <div style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '32px', borderBottom: '1px solid #f1f5f9', paddingBottom: '20px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px', borderRight: '1px solid #e2e8f0', paddingRight: '20px' }}>
-                  <span style={{ fontWeight: '800', color: '#0F172A', fontSize: '1.2rem' }}>4.9</span>
+                  <span style={{ fontWeight: '800', color: '#0F172A', fontSize: '1.25rem' }}>4.9</span>
                   <div style={{ display: 'flex', color: '#fbbf24' }}>
                     <Star size={18} fill="currentColor" />
                     <Star size={18} fill="currentColor" />
@@ -195,10 +195,10 @@ export default async function ProductDetailPage({
                   </div>
                 </div>
                 <div style={{ borderRight: '1px solid #e2e8f0', paddingRight: '20px' }}>
-                  <span style={{ fontWeight: '800', color: '#0F172A' }}>1.2rb</span> <span style={{ color: '#64748b', fontSize: '0.9rem' }}>Penilaian</span>
+                  <span style={{ fontWeight: '800', color: '#0F172A', fontSize: '1.05rem' }}>1.2rb</span> <span style={{ color: '#64748b', fontSize: '0.95rem' }}>Penilaian</span>
                 </div>
                 <div>
-                   <span style={{ fontWeight: '800', color: '#0F172A' }}>2.5rb+</span> <span style={{ color: '#64748b', fontSize: '0.9rem' }}>Terjual</span>
+                   <span style={{ fontWeight: '800', color: '#0F172A', fontSize: '1.05rem' }}>2.5rb+</span> <span style={{ color: '#64748b', fontSize: '0.95rem' }}>Terjual</span>
                 </div>
               </div>
 
@@ -390,13 +390,13 @@ export default async function ProductDetailPage({
       `}} />
 
       {/* Mobile Fixed Buy Bar */}
-      <div className="show-mobile fixed-bottom-bar" style={{ padding: '16px 20px', gap: '16px' }}>
+      <div className="show-mobile fixed-bottom-bar" style={{ padding: '16px 20px', gap: '24px', alignItems: 'center' }}>
           <div style={{ flex: 1.2 }}>
-            <p style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: '700' }}>Harga</p>
-            <p style={{ fontSize: 'clamp(1rem, 4vw, 1.25rem)', fontWeight: '900', color: 'var(--primary)', lineHeight: '1.1' }}>Rp {product.price}</p>
+            <p style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: '700', marginBottom: '2px' }}>Harga</p>
+            <p style={{ fontSize: 'clamp(1.1rem, 4.5vw, 1.35rem)', fontWeight: '900', color: 'var(--primary)', lineHeight: '1.1' }}>Rp {product.price}</p>
           </div>
           <div style={{ flex: 1.5 }}>
-            <PurchaseButton productId={productId} url={product.shopeeUrl} />
+            <PurchaseButton productId={productId} url={product.shopeeUrl} variant="compact" />
           </div>
       </div>
     </div>
