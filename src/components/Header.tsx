@@ -28,11 +28,8 @@ export default async function Header() {
           caridisini
         </Link>
         
-        {/* Desktop Nav */}
-        <nav className="hide-mobile" style={{ display: 'flex', gap: '28px', alignItems: 'center' }}>
-          <a href="#" style={{ color: 'var(--text-primary)', fontWeight: '600', fontSize: '0.95rem' }}>Home</a>
-          <a href="#produk" style={{ color: 'var(--text-secondary)', fontWeight: '500', fontSize: '0.95rem' }}>Produk</a>
-          
+        {/* Desktop Nav - Only Dashboard if Auth */}
+        <nav className="hide-mobile" style={{ display: 'flex', alignItems: 'center' }}>
           {isAuth && (
             <Link href="/admin" className="btn" style={{ background: 'var(--primary)', color: 'white', padding: '8px 16px', fontSize: '0.9rem' }}>
               Dashboard
