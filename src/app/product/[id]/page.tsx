@@ -146,7 +146,7 @@ export default async function ProductDetailPage({
               borderRadius: '20px',
               border: '1px solid #f1f5f9',
               marginTop: '16px'
-            }} className="trust-badges-container">
+            }} className="trust-badges-container hide-mobile">
               <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flex: '1 1 140px' }}>
                 <ShieldCheck size={18} color="#0ea5e9" />
                 <div>
