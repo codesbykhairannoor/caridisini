@@ -1,7 +1,7 @@
 import Header from "@/components/Header";
 import ProductCard from "@/components/ProductCard";
 import prisma from "@/lib/prisma";
-import { Search, ShoppingBag, Sparkles, TrendingUp, Info, Target, Users, Mail, MessageCircle, Camera } from "lucide-react";
+import { Search, TrendingUp, Target, Users, Mail, MessageCircle, Camera } from "lucide-react";
 
 export const revalidate = 0;
 
@@ -19,38 +19,14 @@ export default async function Home() {
     <>
       <Header />
       <main>
-        {/* Compact Hero Section */}
-        <section className="hero-white-orange" style={{ paddingBottom: '80px' }}>
-          <div className="blob" style={{ top: '-100px', right: '-100px', background: 'radial-gradient(circle, rgba(238, 77, 45, 0.15) 0%, transparent 70%)' }}></div>
-          
-          <div className="container" style={{ position: 'relative', zIndex: 1, textAlign: 'center' }}>
-            <div className="animate-fade-up" style={{ 
-              display: 'inline-flex', 
-              alignItems: 'center', 
-              gap: '8px', 
-              background: 'var(--primary-light)', 
-              padding: '6px 16px', 
-              borderRadius: '20px',
-              fontSize: '0.75rem',
-              fontWeight: '700',
-              marginBottom: '24px',
-              color: 'var(--primary)',
-            }}>
-              <Sparkles size={14} />
-              Platform Kurasi Affiliate Terpercaya
-            </div>
-
-            <h1 className="animate-fade-up">
-              Temukan Barang Impian <br /> 
-              di <span className="text-gradient-orange">CariDisini</span>
+        {/* Ultra-Minimalist Hero Section */}
+        <section className="hero-white-orange" style={{ padding: '40px 0 60px' }}>
+          <div className="container" style={{ textAlign: 'center' }}>
+            <h1 className="animate-fade-up" style={{ fontSize: 'clamp(1.75rem, 5vw, 2.5rem)', fontWeight: '850' }}>
+              Temukan Barang Impian di <span className="text-gradient-orange">CariDisini</span>
             </h1>
-            
-            <p className="animate-fade-up" style={{ maxWidth: '600px', margin: '0 auto 40px' }}>
-              Belanja cerdas dengan koleksi produk pilihan terbaik dan diskon paling menguntungkan dari Shopee.
-            </p>
 
-            {/* Sticky Search Position */}
-            <div className="animate-fade-up" style={{ maxWidth: '680px', margin: '0 auto', position: 'relative' }}>
+            <div className="animate-fade-up" style={{ maxWidth: '680px', margin: '32px auto 0', position: 'relative' }}>
               <div style={{ 
                 position: 'relative',
                 background: 'white',
@@ -79,10 +55,10 @@ export default async function Home() {
         </section>
 
         {/* Product Grid Section */}
-        <section id="produk" className="container" style={{ paddingBottom: '100px', marginTop: '-40px', position: 'relative', zIndex: 10 }}>
+        <section id="produk" className="container" style={{ paddingBottom: '100px', marginTop: '-20px', position: 'relative', zIndex: 10 }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
             <div>
-              <h2 style={{ fontSize: 'clamp(1.25rem, 5vw, 1.75rem)', fontWeight: '800' }}>🔥 Penawaran Hari Ini</h2>
+              <h2 style={{ fontSize: 'clamp(1.1rem, 4vw, 1.5rem)', fontWeight: '800' }}>🔥 Penawaran Hari Ini</h2>
             </div>
             <div className="hide-mobile" style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--primary)', fontWeight: '600', fontSize: '0.875rem' }}>
               <TrendingUp size={18} />
@@ -114,31 +90,31 @@ export default async function Home() {
         </section>
 
         {/* Tentang Section */}
-        <section id="tentang" style={{ background: 'white', padding: '100px 0', borderTop: '1px solid var(--border-color)' }}>
+        <section id="tentang" style={{ background: 'white', padding: '80px 0', borderTop: '1px solid var(--border-color)' }}>
           <div className="container" style={{ maxWidth: '1000px' }}>
-             <div style={{ textAlign: 'center', marginBottom: '60px' }}>
-                <h2 style={{ fontSize: '2.5rem', fontWeight: '850', marginBottom: '16px' }}>Tentang CariDisni</h2>
-                <p style={{ color: 'var(--text-secondary)', fontSize: '1.1rem' }}>Destinasi kurasi produk Shopee terpercaya untuk belanja lebih cerdas.</p>
+             <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+                <h2 style={{ fontSize: '2rem', fontWeight: '850', marginBottom: '12px' }}>Tentang CariDisni</h2>
+                <p style={{ color: 'var(--text-secondary)' }}>Destinasi kurasi produk Shopee terpercaya.</p>
              </div>
              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '32px' }}>
-                <div className="card" style={{ padding: '32px' }}>
+                <div className="card" style={{ padding: '24px' }}>
                    <Target className="text-primary" style={{ marginBottom: '16px' }} />
-                   <h3 style={{ marginBottom: '12px' }}>Visi Kami</h3>
-                   <p style={{ color: 'var(--text-secondary)' }}>Menjadi jembatan utama antara pembeli cerdas dan penawaran terbaik di Shopee.</p>
+                   <h3 style={{ marginBottom: '12px', fontSize: '1.1rem' }}>Visi Kami</h3>
+                   <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Menjadi jembatan utama antara pembeli cerdas dan penawaran terbaik di Shopee.</p>
                 </div>
-                <div className="card" style={{ padding: '32px' }}>
+                <div className="card" style={{ padding: '24px' }}>
                    <Users className="text-primary" style={{ marginBottom: '16px' }} />
-                   <h3 style={{ marginBottom: '12px' }}>Tim Ahli</h3>
-                   <p style={{ color: 'var(--text-secondary)' }}>Dikelola oleh kurator belanja yang spesialis mencari diskon tersembunyi.</p>
+                   <h3 style={{ marginBottom: '12px', fontSize: '1.1rem' }}>Tim Ahli</h3>
+                   <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Dikelola oleh kurator belanja yang spesialis mencari diskon tersembunyi.</p>
                 </div>
              </div>
           </div>
         </section>
 
         {/* Kontak Section */}
-        <section id="kontak" style={{ padding: '100px 0', background: 'var(--bg-color)' }}>
+        <section id="kontak" style={{ padding: '80px 0', background: 'var(--bg-color)' }}>
            <div className="container" style={{ textAlign: 'center' }}>
-              <h2 style={{ fontSize: '2.5rem', fontWeight: '850', marginBottom: '40px' }}>Hubungi Kami</h2>
+              <h2 style={{ fontSize: '2rem', fontWeight: '850', marginBottom: '32px' }}>Hubungi Kami</h2>
               <div style={{ display: 'flex', justifyContent: 'center', gap: '32px', flexWrap: 'wrap' }}>
                  <a href="#" style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--text-primary)', fontWeight: '600' }}>
                     <Camera size={24} /> Instagram
@@ -154,8 +130,8 @@ export default async function Home() {
         </section>
 
         {/* Footer */}
-        <footer style={{ padding: '40px 0', textAlign: 'center', borderTop: '1px solid var(--border-color)', background: 'white' }}>
-           <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
+        <footer style={{ padding: '32px 0', textAlign: 'center', borderTop: '1px solid var(--border-color)', background: 'white' }}>
+           <p style={{ color: 'var(--text-secondary)', fontSize: '0.8rem' }}>
               &copy; {new Date().getFullYear()} CariDisni. Semua hak cipta dilindungi.
            </p>
         </footer>
