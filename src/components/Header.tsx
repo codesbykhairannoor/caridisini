@@ -7,27 +7,7 @@ export default async function Header() {
 
   return (
     <header className="glass" style={{ position: 'sticky', top: 0, zIndex: 50 }}>
-      <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 'clamp(60px, 10vw, 72px)' }}>
-        <Link href="/" style={{ 
-          display: 'flex', 
-          alignItems: 'center', 
-          gap: '12px',
-          fontSize: 'clamp(1.2rem, 4vw, 1.5rem)', 
-          fontWeight: '900', 
-          color: 'var(--primary)', 
-          letterSpacing: '-0.5px',
-          textDecoration: 'none'
-        }}>
-          <Image 
-            src="/logo.png" 
-            alt="caridisini logo" 
-            width={36} 
-            height={36} 
-            style={{ borderRadius: '8px', boxShadow: '0 4px 10px rgba(238, 77, 45, 0.1)' }}
-          />
-          caridisini
-        </Link>
-        
+      <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', height: 'clamp(60px, 10vw, 72px)' }}>
         {/* Desktop Nav - Only Dashboard if Auth */}
         <nav className="hide-mobile" style={{ display: 'flex', alignItems: 'center' }}>
           {isAuth && (

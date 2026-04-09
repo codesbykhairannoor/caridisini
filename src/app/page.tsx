@@ -1,6 +1,7 @@
 import Header from "@/components/Header";
 import ProductCard from "@/components/ProductCard";
 import prisma from "@/lib/prisma";
+import Image from "next/image";
 import { Search, TrendingUp } from "lucide-react";
 
 export const revalidate = 0;
@@ -22,6 +23,15 @@ export default async function Home() {
         {/* Ultra-Minimalist Hero Section */}
         <section className="hero-white-orange" style={{ padding: '40px 0 60px' }}>
           <div className="container" style={{ textAlign: 'center' }}>
+            <div className="animate-fade-up" style={{ marginBottom: '24px', display: 'flex', justifyContent: 'center' }}>
+              <Image 
+                src="/logo.png" 
+                alt="caridisini logo" 
+                width={56} 
+                height={56} 
+                style={{ borderRadius: '14px', boxShadow: '0 8px 25px rgba(238, 77, 45, 0.15)' }}
+              />
+            </div>
             <h1 className="animate-fade-up" style={{ fontSize: 'clamp(1.75rem, 5vw, 2.5rem)', fontWeight: '850' }}>
               Temukan Barang Impian di <span className="text-gradient-orange">CariDisini</span>
             </h1>
