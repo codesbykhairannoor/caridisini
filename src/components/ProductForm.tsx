@@ -1,18 +1,29 @@
 'use client';
 
 import { useState } from "react";
-import { addProduct, scrapeProductData, uploadFile } from "@/app/actions";
+import { addProduct, scrapeProductData, uploadFile, generateAiOptimization, updateProduct } from "@/app/actions";
+import { Sparkles, Brain, X } from "lucide-react";
 
-export default function ProductForm() {
+interface ProductFormProps {
+  initialData?: any;
+  onSuccess?: () => void;
+  onCancel?: () => void;
+}
+
+export default function ProductForm({ initialData, onSuccess, onCancel }: ProductFormProps) {
   const [loading, setLoading] = useState(false);
+  const [aiLoading, setAiLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [formData, setFormData] = useState({
-    title: "",
-    categoryName: "",
-    imageUrl: "",
-    price: "",
-    originalPrice: "",
-    shopeeUrl: ""
+    id: initialData?.id || null,
+    title: initialData?.title || "",
+    description: initialData?.description || "",
+    categoryName: initialData?.category?.name || "",
+    imageUrl: initialData?.imageUrl || "",
+    images: initialData?.images || "[]", 
+    price: initialData?.price || "",
+    originalPrice: initialData?.originalPrice || "",
+    shopeeUrl: initialData?.shopeeUrl || ""
   });
   const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
 
@@ -52,7 +63,7 @@ export default function ProductForm() {
     try {
       const result = await scrapeProductData(formData.shopeeUrl);
       if (result.success && result.data) {
-        const { title, imageUrl, price, categoryName } = result.data;
+        const { title, description, imageUrl, images, price, categoryName } = result.data;
         
         // Check if we actually got meaningful data
         if (!title && !imageUrl) {
@@ -63,7 +74,9 @@ export default function ProductForm() {
         setFormData(prev => ({
           ...prev,
           title: title || prev.title,
+          description: description || prev.description,
           imageUrl: imageUrl || prev.imageUrl,
+          images: images || prev.images,
           price: price || prev.price,
           categoryName: categoryName || prev.categoryName,
         }));
@@ -82,14 +95,93 @@ export default function ProductForm() {
     }
   };
 
+  const handleAiOptimize = async () => {
+    if (!formData.title) {
+      setMessage({ text: "Silakan ambil data produk atau isi judul terlebih dahulu", type: 'error' });
+      return;
+    }
+
+    setAiLoading(true);
+    setMessage(null);
+    try {
+      const result = await generateAiOptimization(formData.title, formData.description);
+      if (result.success && result.data) {
+        const { categoryName, polishedDescription } = result.data;
+        setFormData(prev => ({
+          ...prev,
+          categoryName: categoryName || prev.categoryName,
+          description: polishedDescription || prev.description
+        }));
+        setMessage({ text: "AI berhasil mengoptimasi kategori dan deskripsi!", type: 'success' });
+      } else {
+        if (typeof result.error === 'string' && (result.error.includes("apiKey") || result.error.includes("API_KEY"))) {
+          setMessage({ text: "Error: GEMINI_API_KEY belum dikonfigurasi di .env", type: 'error' });
+        } else {
+          setMessage({ text: (result.error as string) || "AI gagal memproses data", type: 'error' });
+        }
+      }
+    } catch (err: any) {
+      setMessage({ text: "Terjadi kesalahan sistem AI", type: 'error' });
+    } finally {
+      setAiLoading(false);
+    }
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setMessage(null);
+
+    const fd = new FormData();
+    Object.entries(formData).forEach(([key, value]) => {
+      if (value !== null) fd.append(key, value.toString());
+    });
+
+    try {
+      if (formData.id) {
+        await updateProduct(formData.id, fd);
+        setMessage({ text: "Produk berhasil diperbarui!", type: 'success' });
+      } else {
+        await addProduct(fd);
+        setMessage({ text: "Produk berhasil ditambahkan!", type: 'success' });
+        // Reset form if it was a new product
+        setFormData({
+          id: null,
+          title: "",
+          description: "",
+          categoryName: "",
+          imageUrl: "",
+          images: "[]",
+          price: "",
+          originalPrice: "",
+          shopeeUrl: ""
+        });
+      }
+      if (onSuccess) setTimeout(onSuccess, 1500);
+    } catch (err: any) {
+      setMessage({ text: err.message || "Terjadi kesalahan saat menyimpan", type: 'error' });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <div className="card" style={{ padding: '32px', marginBottom: '40px' }}>
-      <h2 style={{ fontSize: '1.25rem', marginBottom: '24px', fontWeight: '600' }}>Tambah Produk Baru</h2>
+    <div className="card" style={{ padding: '32px', marginBottom: '40px', position: 'relative' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+        <h2 style={{ fontSize: '1.25rem', fontWeight: '600' }}>
+          {formData.id ? 'Edit Produk' : 'Tambah Produk Baru'}
+        </h2>
+        {onCancel && (
+          <button onClick={onCancel} style={{ background: 'transparent', border: 'none', color: '#6b7280', cursor: 'pointer' }}>
+            <X size={20} />
+          </button>
+        )}
+      </div>
       
       {message && (
         <div style={{ 
@@ -105,10 +197,12 @@ export default function ProductForm() {
         </div>
       )}
 
-      <form action={addProduct} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        <input type="hidden" name="images" value={formData.images} />
+        
         <div>
           <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>Link Shopee Affiliate *</label>
-          <div style={{ display: 'flex', gap: '12px' }}>
+          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
             <input 
               type="url" 
               name="shopeeUrl" 
@@ -117,25 +211,62 @@ export default function ProductForm() {
               placeholder="https://shope.ee/..." 
               value={formData.shopeeUrl}
               onChange={handleChange}
-              style={{ flexGrow: 1 }}
+              style={{ flexGrow: 1, minWidth: '300px' }}
             />
-            <button 
-              type="button" 
-              onClick={handleFetchData}
-              disabled={loading}
-              className="btn"
-              style={{ 
-                background: 'var(--bg-card)', 
-                border: '1px solid var(--primary)', 
-                color: 'var(--primary)',
-                whiteSpace: 'nowrap',
-                padding: '0 20px',
-                opacity: loading ? 0.5 : 1
-              }}
-            >
-              {loading ? 'Mencari...' : 'Cek Info Produk'}
-            </button>
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <button 
+                type="button" 
+                onClick={handleFetchData}
+                disabled={loading}
+                className="btn"
+                style={{ 
+                  background: 'var(--bg-card)', 
+                  border: '1px solid var(--primary)', 
+                  color: 'var(--primary)',
+                  whiteSpace: 'nowrap',
+                  padding: '0 20px',
+                  opacity: loading ? 0.5 : 1
+                }}
+              >
+                {loading ? 'Mencari...' : 'Cek Info Produk'}
+              </button>
+              
+              <button 
+                type="button" 
+                onClick={handleAiOptimize}
+                disabled={aiLoading || !formData.title}
+                className="btn"
+                style={{ 
+                  background: 'linear-gradient(45deg, #EE4D2D, #FF8E53)', 
+                  border: 'none', 
+                  color: 'white',
+                  whiteSpace: 'nowrap',
+                  padding: '0 20px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  opacity: (aiLoading || !formData.title) ? 0.6 : 1,
+                  boxShadow: '0 4px 15px rgba(238, 77, 45, 0.2)'
+                }}
+              >
+                <Sparkles size={16} />
+                {aiLoading ? 'AI Thinking...' : 'AI Magic Optimize'}
+              </button>
+            </div>
           </div>
+        </div>
+
+        <div>
+          <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>Deskripsi Produk (Auto-generated)</label>
+          <textarea 
+            name="description" 
+            className="input-field" 
+            rows={4}
+            placeholder="Deskripsi produk akan muncul di sini secara otomatis..." 
+            value={formData.description}
+            onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+            style={{ width: '100%', resize: 'vertical' }}
+          />
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
@@ -201,9 +332,24 @@ export default function ProductForm() {
         </div>
 
         {formData.imageUrl && (
-          <div style={{ textAlign: 'center', background: 'rgba(0,0,0,0.05)', padding: '12px', borderRadius: '8px' }}>
-            <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '8px' }}>Preview Media:</p>
-            <img src={formData.imageUrl} alt="Preview" style={{ maxWidth: '100%', maxHeight: '200px', objectFit: 'contain', borderRadius: '8px', border: '1px solid var(--border-color)' }} />
+          <div style={{ background: 'rgba(0,0,0,0.05)', padding: '16px', borderRadius: '8px' }}>
+            <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '12px', textAlign: 'center' }}>Pratinjau Galeri:</p>
+            <div style={{ display: 'flex', gap: '10px', overflowX: 'auto', paddingBottom: '8px' }}>
+               {/* Main Image First */}
+               <div style={{ flexShrink: 0, position: 'relative' }}>
+                 <img src={formData.imageUrl} alt="Main" style={{ width: '80px', height: '80px', objectFit: 'cover', borderRadius: '8px', border: '2px solid var(--primary)' }} />
+                 <span style={{ position: 'absolute', bottom: '2px', right: '2px', background: 'var(--primary)', color: 'white', fontSize: '8px', padding: '1px 4px', borderRadius: '4px' }}>Utama</span>
+               </div>
+               {/* Additional Images */}
+               {(() => {
+                 try {
+                   const gallery = JSON.parse(formData.images);
+                   return gallery.filter((img: string) => img !== formData.imageUrl).map((img: string, i: number) => (
+                     <img key={i} src={img} alt={`Gallery ${i}`} style={{ width: '80px', height: '80px', flexShrink: 0, objectFit: 'cover', borderRadius: '8px', border: '1px solid var(--border-color)' }} />
+                   ));
+                 } catch(e) { return null; }
+               })()}
+            </div>
           </div>
         )}
 

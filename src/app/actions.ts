@@ -8,10 +8,13 @@ import { cookies } from "next/headers";
 import fs from "fs/promises";
 import path from "path";
 import { chromium } from "playwright";
+import { generateProductContent } from "@/lib/ai";
 
 export async function addProduct(formData: FormData) {
   const title = formData.get('title') as string;
+  const description = formData.get('description') as string;
   const imageUrl = formData.get('imageUrl') as string;
+  const images = formData.get('images') as string; // Store as JSON string of array
   const originalPrice = formData.get('originalPrice') as string;
   const price = formData.get('price') as string;
   const shopeeUrl = formData.get('shopeeUrl') as string;
@@ -41,7 +44,9 @@ export async function addProduct(formData: FormData) {
   await prisma.product.create({
     data: {
       title,
+      description,
       imageUrl,
+      images,
       originalPrice: originalPrice || null,
       price,
       shopeeUrl,
@@ -57,7 +62,9 @@ export async function updateProduct(id: number, formData: FormData) {
   await serializeAuthCheck();
 
   const title = formData.get('title') as string;
+  const description = formData.get('description') as string;
   const imageUrl = formData.get('imageUrl') as string;
+  const images = formData.get('images') as string;
   const originalPrice = formData.get('originalPrice') as string;
   const price = formData.get('price') as string;
   const shopeeUrl = formData.get('shopeeUrl') as string;
@@ -88,7 +95,9 @@ export async function updateProduct(id: number, formData: FormData) {
     where: { id },
     data: {
       title,
+      description,
       imageUrl,
+      images,
       originalPrice: originalPrice || null,
       price,
       shopeeUrl,
@@ -98,6 +107,74 @@ export async function updateProduct(id: number, formData: FormData) {
 
   revalidatePath('/');
   revalidatePath('/admin');
+}
+
+export async function getProduct(id: number) {
+  return await prisma.product.findUnique({
+    where: { id: Number(id) },
+    include: { category: true }
+  });
+}
+
+export async function getRecommendations(categoryId: number | null, excludeId: number) {
+  if (categoryId) {
+    const similar = await prisma.product.findMany({
+      where: {
+        categoryId,
+        id: { not: excludeId }
+      },
+      take: 4,
+      include: { category: true }
+    });
+    if (similar.length > 0) return similar;
+  }
+  
+  // Fallback to latest products
+  return await prisma.product.findMany({
+    where: {
+      id: { not: excludeId }
+    },
+    take: 4,
+    orderBy: { createdAt: 'desc' },
+    include: { category: true }
+  });
+}
+
+export async function refreshProductData(id: number) {
+  await serializeAuthCheck();
+
+  const product = await prisma.product.findUnique({
+    where: { id }
+  });
+
+  if (!product || !product.shopeeUrl) {
+    throw new Error('Product not found');
+  }
+
+  const result = await scrapeProductData(product.shopeeUrl);
+  if (!result.success || !result.data) {
+    throw new Error(result.error || 'Failed to fetch new data');
+  }
+
+  const { title, description, imageUrl, images, price, originalPrice } = result.data;
+
+  await prisma.product.update({
+    where: { id },
+    data: {
+      title: title || product.title,
+      description: description || product.description,
+      imageUrl: imageUrl || product.imageUrl,
+      images: images || product.images,
+      price: price || product.price,
+      originalPrice: originalPrice || product.originalPrice,
+    }
+  });
+
+  revalidatePath('/');
+  revalidatePath('/admin');
+  revalidatePath(`/product/${id}`);
+  
+  return { success: true };
 }
 
 // Helper to resolve short links and follow redirects manually if needed
@@ -123,39 +200,103 @@ function extractMetadata($: cheerio.CheerioAPI) {
   
   const title = getMeta('og:title') || $('title').text() || "";
   const imageUrl = getMeta('og:image') || "";
+  let description = getMeta('description') || "";
   let price = "";
+  let originalPrice = "";
   let categoryName = "";
+  let images: string[] = [];
+
+  if (imageUrl) images.push(imageUrl);
 
   // Extract from LD+JSON
   $('script[type="application/ld+json"]').each((_, el) => {
     try {
       const json = JSON.parse($(el).html() || "{}");
       if (json["@type"] === "Product") {
-        const p = json.offers?.price || (Array.isArray(json.offers) ? json.offers[0].price : "");
-        if (p) price = parseFloat(p).toLocaleString('id-ID').replace(',00', '');
+        // Handle Price & Range
+        const offers = json.offers;
+        if (offers) {
+          if (offers["@type"] === "AggregateOffer") {
+            // Shopee Range found
+            const low = offers.lowPrice || offers.price;
+            const high = offers.highPrice;
+            if (low && high && low !== high) {
+              const minStr = parseFloat(low).toLocaleString('id-ID').replace(',00', '');
+              const maxStr = parseFloat(high).toLocaleString('id-ID').replace(',00', '');
+              price = `${minStr} - ${maxStr}`;
+              // For range products, original price is complex, but we'll try to find if there's an even higher base price
+              // For now, we prioritize showing the active range.
+              originalPrice = ""; 
+            } else if (low) {
+              price = parseFloat(low).toLocaleString('id-ID').replace(',00', '');
+            }
+          } else {
+            // Flat price
+            const p = offers.price;
+            if (p) price = parseFloat(p).toLocaleString('id-ID').replace(',00', '');
+          }
+        }
+        
+        // Detailed images and description
+        if (json.image) {
+          if (Array.isArray(json.image)) {
+            images = [...new Set([...images, ...json.image])];
+          } else {
+            images = [...new Set([...images, json.image])];
+          }
+        }
+        if (json.description) {
+           description = json.description;
+        }
       }
       if (json["@type"] === "BreadcrumbList") {
         const items = json.itemListElement;
         if (items && items.length > 1) {
-          // The last item is the product title, we want the one before it
           const relevantItem = items[items.length - 2];
-          categoryName = relevantItem.name || (relevantItem.item && relevantItem.item.name) || "";
+          let name = relevantItem.name || (relevantItem.item && relevantItem.item.name) || "";
+          if (name && name.length < 50 && name.toLowerCase() !== title.toLowerCase()) {
+            categoryName = name;
+          }
         }
       }
     } catch (e) {}
   });
 
-  // Fallback for price
+  // Fallback for price from description regex (handles "Rp 100.000 - Rp 200.000")
   if (!price) {
     const desc = getMeta('description') || "";
-    const match = desc.match(/Rp\s?([0-9.,]+)/i);
-    if (match) price = match[1].replace(/[,.]00$/, '');
+    // Match first occurance of price
+    const matches = [...desc.matchAll(/Rp\s?([0-9.,]+)/gi)];
+    if (matches.length > 0) {
+      price = matches[0][1].replace(/[,.]00$/, '');
+      // If there's a second price, it might be the high range or original price
+      if (matches.length > 1) {
+        const secondPrice = matches[1][1].replace(/[,.]00$/, '');
+        if (secondPrice !== price) originalPrice = secondPrice;
+      }
+    }
+  }
+
+  // Price sanitization: swap if price > originalPrice (Shopee sometimes lists high-low in desc)
+  if (price && originalPrice) {
+    const pVal = parseInt(price.replace(/\D/g, ''));
+    const oVal = parseInt(originalPrice.replace(/\D/g, ''));
+    if (pVal > oVal) {
+      // If the "price" we found is higher than "originalPrice", the original was probably the lower one or we found a range.
+      // We take the lower one as the active price.
+      const temp = price;
+      price = originalPrice;
+      originalPrice = temp;
+    }
   }
 
   return {
-    title: title.split(' | ')[0].trim(),
+    title: title.split(' | ')[0].replace(/^jual\s+/i, '').trim(),
+    description,
     imageUrl,
+    images: JSON.stringify(images),
     price,
+    originalPrice,
     categoryName
   };
 }
@@ -201,10 +342,11 @@ export async function scrapeProductData(url: string) {
        Object.defineProperty(navigator, 'webdriver', { get: () => undefined });
     });
 
-    await page.goto(finalUrl, { waitUntil: 'domcontentloaded', timeout: 30000 });
+    await page.goto(finalUrl, { waitUntil: 'networkidle', timeout: 45000 });
     
-    // Wait for core content or meta tags to render
-    await page.waitForTimeout(3000); 
+    // Wait for core content or meta tags to render, or specific price elements
+    await page.waitForSelector('.pqm6_p, ._3n5NQa, [aria-live="polite"], .price', { timeout: 10000 }).catch(() => null);
+    await page.waitForTimeout(2000); 
     
     const html = await page.content();
     const $ = cheerio.load(html);
@@ -294,5 +436,29 @@ export async function uploadFile(formData: FormData) {
   } catch (error: any) {
     console.error('Upload error:', error.message);
     return { success: false, error: error.message };
+  }
+}
+
+export async function generateAiOptimization(title: string, rawDescription: string) {
+  await serializeAuthCheck();
+  try {
+    const result = await generateProductContent(title, rawDescription);
+    return { success: true, data: result };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+}
+export async function trackProductClick(productId: number) {
+  try {
+    await prisma.product.update({
+      where: { id: productId },
+      data: {
+        clicks: { increment: 1 }
+      }
+    });
+    return { success: true };
+  } catch (error: any) {
+    console.error('Failed to track click:', error.message);
+    return { success: false };
   }
 }

@@ -1,5 +1,6 @@
 generator client {
   provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
 }
 
 datasource db {
@@ -17,14 +18,19 @@ model Category {
 }
 
 model Product {
-  id          Int       @id @default(autoincrement())
-  title       String
-  imageUrl    String
+  id            Int       @id @default(autoincrement())
+  title         String
+  description   String?
+  imageUrl      String    // Primary/Main image
+  images        String?   // JSON string or comma-separated additional images
   originalPrice String?
-  price       String
-  shopeeUrl   String
-  categoryId  Int?
-  category    Category? @relation(fields: [categoryId], references: [id])
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  price         String
+  shopeeUrl     String
+  clicks        Int       @default(0)
+  categoryId    Int?
+  category      Category? @relation(fields: [categoryId], references: [id])
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([categoryId])
 }

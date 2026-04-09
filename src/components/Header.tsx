@@ -6,11 +6,13 @@ export default async function Header() {
 
   return (
     <header className="glass" style={{ position: 'sticky', top: 0, zIndex: 50 }}>
-      <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '72px' }}>
-        <Link href="/" style={{ fontSize: '1.5rem', fontWeight: '700', color: 'var(--primary)', letterSpacing: '-0.5px' }}>
-          caridisni
+      <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 'clamp(60px, 10vw, 72px)' }}>
+        <Link href="/" style={{ fontSize: 'clamp(1.2rem, 4vw, 1.5rem)', fontWeight: '700', color: 'var(--primary)', letterSpacing: '-0.5px' }}>
+          caridisini
         </Link>
-        <nav style={{ display: 'flex', gap: '24px', alignItems: 'center' }}>
+        
+        {/* Desktop Nav */}
+        <nav className="hide-mobile" style={{ display: 'flex', gap: '24px', alignItems: 'center' }}>
           <Link href="/" style={{ color: 'var(--text-primary)', fontWeight: '500' }}>Home</Link>
           <a href="#kategori" style={{ color: 'var(--text-secondary)', fontWeight: '500' }}>Kategori</a>
           
@@ -20,6 +22,13 @@ export default async function Header() {
             </Link>
           )}
         </nav>
+
+        {/* Mobile Dashboard Link */}
+        {isAuth && (
+          <Link href="/admin" className="show-mobile" style={{ color: 'var(--primary)', fontWeight: '700', fontSize: '0.85rem' }}>
+            Dashboard
+          </Link>
+        )}
       </div>
     </header>
   );

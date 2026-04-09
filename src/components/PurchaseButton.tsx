@@ -1,0 +1,43 @@
+'use client';
+
+import { ShoppingBag } from "lucide-react";
+import { trackProductClick } from "@/app/actions";
+
+interface PurchaseButtonProps {
+  productId: number;
+  url: string;
+}
+
+export default function PurchaseButton({ productId, url }: PurchaseButtonProps) {
+  const handleClick = () => {
+    trackProductClick(productId);
+    window.open(url, '_blank', 'noopener,noreferrer');
+  };
+
+  return (
+    <button
+      onClick={handleClick}
+      style={{
+        width: '100%',
+        padding: '18px',
+        background: 'linear-gradient(45deg, #EE4D2D, #FF8E53)',
+        color: 'white',
+        border: 'none',
+        borderRadius: '12px',
+        fontSize: '1.1rem',
+        fontWeight: '700',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: '12px',
+        cursor: 'pointer',
+        boxShadow: '0 10px 25px rgba(238, 77, 45, 0.25)',
+        transition: 'all 0.3s ease'
+      }}
+      className="btn-hover-scale"
+    >
+      <ShoppingBag size={22} />
+      Beli Sekarang di Shopee
+    </button>
+  );
+}

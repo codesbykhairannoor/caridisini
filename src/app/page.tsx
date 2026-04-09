@@ -21,115 +21,110 @@ export default async function Home() {
     <>
       <Header />
       <main>
-        {/* Full-width Animated Hero Section */}
-        <section className="hero-gradient" style={{ 
-          position: 'relative',
-          padding: '120px 0 160px',
-          color: 'white',
-          overflow: 'hidden'
-        }}>
+        {/* Clean Animated Hero Section */}
+        <section className="hero-white-orange">
+          {/* Animated Background Blobs */}
+          <div className="blob" style={{ top: '-100px', right: '-100px', background: 'radial-gradient(circle, rgba(238, 77, 45, 0.15) 0%, transparent 70%)' }}></div>
+          <div className="blob" style={{ bottom: '-150px', left: '-100px', background: 'radial-gradient(circle, rgba(255, 142, 83, 0.1) 0%, transparent 70%)', animationDelay: '-5s' }}></div>
+          
           {/* Decorative Floating Elements */}
-          <div style={{ position: 'absolute', top: '10%', right: '10%', animation: 'float 6s ease-in-out infinite', opacity: 0.2 }}>
-            <ShoppingBag size={120} />
+          <div style={{ position: 'absolute', top: '15%', right: '15%', animation: 'float 6s ease-in-out infinite', opacity: 0.1, color: 'var(--primary)' }}>
+            <ShoppingBag size={100} />
           </div>
-          <div style={{ position: 'absolute', bottom: '15%', left: '5%', animation: 'float 8s ease-in-out infinite', opacity: 0.15, animationDelay: '1s' }}>
-            <Sparkles size={80} />
-          </div>
-          <div style={{ position: 'absolute', top: '20%', left: '15%', animation: 'float 7s ease-in-out infinite', opacity: 0.1, animationDelay: '-1.5s' }}>
-            <TrendingUp size={60} />
+          <div style={{ position: 'absolute', bottom: '20%', left: '10%', animation: 'float 8s ease-in-out infinite', opacity: 0.08, animationDelay: '1s', color: 'var(--primary)' }}>
+            <Sparkles size={120} />
           </div>
 
-          <div className="container animate-fade-in" style={{ position: 'relative', zIndex: 1, textAlign: 'center' }}>
-            <div style={{ 
+          <div className="container" style={{ position: 'relative', zIndex: 1, textAlign: 'center' }}>
+            <div className="animate-fade-up" style={{ 
               display: 'inline-flex', 
               alignItems: 'center', 
               gap: '8px', 
-              background: 'rgba(255,255,255,0.15)', 
-              backdropFilter: 'blur(10px)',
-              padding: '8px 16px', 
+              background: 'var(--primary-light)', 
+              padding: '8px 20px', 
               borderRadius: '20px',
               fontSize: '0.875rem',
-              fontWeight: '600',
+              fontWeight: '700',
               marginBottom: '32px',
-              border: '1px solid rgba(255,255,255,0.2)'
+              color: 'var(--primary)',
+              boxShadow: '0 4px 15px rgba(238, 77, 45, 0.1)'
             }}>
               <Sparkles size={16} />
               Platform Kurasi Affiliate Terpercaya
             </div>
 
-            <h1 className="text-gradient" style={{ 
-              fontSize: 'clamp(3rem, 8vw, 5rem)', 
-              fontWeight: '800', 
+            <h1 className="animate-fade-up" style={{ 
+              fontSize: 'clamp(3rem, 7vw, 4.5rem)', 
+              fontWeight: '850', 
               marginBottom: '24px',
               lineHeight: '1.1',
-              letterSpacing: '-2px'
+              letterSpacing: '-0.04em',
+              color: 'var(--text-primary)',
+              animationDelay: '0.1s'
             }}>
-              Cari Barang Impian <br /> 
-              Mulai <span style={{ textDecoration: 'underline', textDecorationColor: 'rgba(255,255,255,0.4)', textUnderlineOffset: '12px' }}>CariDisni</span>
+              Temukan Barang Impian <br /> 
+              di <span className="text-gradient-orange">CariDisni</span>
             </h1>
             
-            <p style={{ 
+            <p className="animate-fade-up" style={{ 
               fontSize: '1.25rem', 
-              maxWidth: '700px',
+              maxWidth: '650px',
               margin: '0 auto 48px',
               lineHeight: '1.6',
-              opacity: 0.9,
-              fontWeight: '400'
+              color: 'var(--text-secondary)',
+              fontWeight: '400',
+              animationDelay: '0.2s'
             }}>
-              Dapatkan produk-produk pilihan terbaik dengan promo diskon gila-gilaan dari Shopee. Semua dalam satu genggaman di caridisni.
+              Belanja cerdas dengan koleksi produk pilihan terbaik dan diskon paling menguntungkan dari Shopee, dikurasi khusus untuk Anda.
             </p>
 
-            <div style={{ 
-              maxWidth: '650px', 
+            <div className="animate-fade-up" style={{ 
+              maxWidth: '680px', 
               margin: '0 auto', 
               position: 'relative',
-              filter: 'drop-shadow(0 20px 40px rgba(0,0,0,0.15))'
+              animationDelay: '0.3s'
             }}>
-              <div style={{ position: 'absolute', left: '24px', top: '50%', transform: 'translateY(-50%)', zIndex: 1 }}>
-                <Search size={24} color="var(--text-secondary)" />
-              </div>
-              <input 
-                type="text" 
-                placeholder="Cari ribuan barang berdiskon di sini..." 
-                className="input-field"
-                style={{ 
-                  background: 'white', 
-                  padding: '24px 24px 24px 64px', 
-                  fontSize: '1.15rem',
-                  borderRadius: '40px',
-                  border: 'none',
-                  color: '#000'
-                }}
-              />
-              <button className="btn btn-primary" style={{
-                position: 'absolute',
-                right: '10px',
-                top: '10px',
-                bottom: '10px',
-                borderRadius: '32px',
-                padding: '0 32px',
-                fontSize: '1rem',
-                boxShadow: '0 4px 12px rgba(238, 77, 45, 0.4)'
+              <div style={{ 
+                position: 'relative',
+                background: 'white',
+                borderRadius: '50px',
+                padding: '8px',
+                boxShadow: '0 25px 50px -12px rgba(238, 77, 45, 0.15)',
+                border: '1px solid var(--border-color)',
+                display: 'flex',
+                alignItems: 'center'
               }}>
-                Cari Sekarang
-              </button>
+                <div style={{ padding: '0 24px' }}>
+                  <Search size={22} color="var(--text-secondary)" />
+                </div>
+                <input 
+                  type="text" 
+                  placeholder="Cari ribuan barang berdiskon di sini..." 
+                  className="input-field"
+                  style={{ 
+                    border: 'none',
+                    padding: '16px 0',
+                    fontSize: '1.1rem',
+                    boxShadow: 'none',
+                    background: 'transparent'
+                  }}
+                />
+                <button className="btn btn-primary" style={{
+                  borderRadius: '40px',
+                  padding: '16px 36px',
+                  fontSize: '1rem',
+                  fontWeight: '700',
+                  boxShadow: '0 10px 20px rgba(238, 77, 45, 0.2)'
+                }}>
+                  Cari Sekarang
+                </button>
+              </div>
             </div>
           </div>
         </section>
 
-        {/* Improved Categories & Product List Container */}
-        <div style={{ marginTop: '-60px', position: 'relative', zIndex: 10 }}>
-          {/* Categories Section */}
-          <section id="kategori" className="container">
-            <div className="card" style={{ padding: '24px', display: 'flex', gap: '16px', overflowX: 'auto', marginBottom: '40px', border: 'none', boxShadow: '0 10px 40px rgba(0,0,0,0.05)' }}>
-              <button className="btn btn-primary" style={{ borderRadius: '30px', whiteSpace: 'nowrap' }}>Semua Produk</button>
-              {categories.map(cat => (
-                <button key={cat.id} className="btn" style={{ background: 'var(--bg-card)', color: 'var(--text-secondary)', border: '1px solid var(--border-color)', whiteSpace: 'nowrap', borderRadius: '30px' }}>
-                  {cat.name}
-                </button>
-              ))}
-            </div>
-          </section>
+        {/* Product Grid Section */}
+        <div style={{ marginTop: '40px', position: 'relative', zIndex: 10 }}>
 
           {/* Product Grid Section */}
           <section className="container" style={{ paddingBottom: '100px' }}>
@@ -153,6 +148,7 @@ export default async function Home() {
                 {products.map(product => (
                   <ProductCard 
                     key={product.id}
+                    id={product.id}
                     title={product.title}
                     imageUrl={product.imageUrl}
                     originalPrice={product.originalPrice}

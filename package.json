@@ -9,6 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.24.1",
     "@prisma/client": "^5.22.0",
     "axios": "^1.15.0",
     "cheerio": "^1.2.0",
