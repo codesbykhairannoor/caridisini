@@ -77,6 +77,12 @@ img {
   padding: 0 5%; /* Fluid padding based on screen width */
 }
 
+@media (max-width: 768px) {
+  .container {
+    padding: 0 12px;
+  }
+}
+
 /* Utilities */
 .glass {
   background: rgba(255, 255, 255, 0.7);
@@ -150,6 +156,19 @@ img {
   outline: none;
   border-color: var(--primary);
   box-shadow: 0 0 0 3px rgba(238, 77, 45, 0.1);
+}
+
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 32px;
+}
+
+@media (max-width: 768px) {
+  .product-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
 }
 
 /* Animations */
@@ -283,8 +302,18 @@ img {
   }
   
   .hero-white-orange {
-    padding: 60px 0 80px;
+    padding: 40px 0 60px;
     text-align: center;
+  }
+
+  .hero-white-orange h1 {
+    font-size: 2.25rem !important;
+    margin-bottom: 16px !important;
+  }
+
+  .hero-white-orange p {
+    font-size: 1rem !important;
+    margin-bottom: 32px !important;
   }
 }
 

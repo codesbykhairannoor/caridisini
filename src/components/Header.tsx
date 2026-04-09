@@ -30,10 +30,10 @@ export default async function Header() {
         
         {/* Desktop Nav */}
         <nav className="hide-mobile" style={{ display: 'flex', gap: '28px', alignItems: 'center' }}>
-          <Link href="/" style={{ color: 'var(--text-primary)', fontWeight: '600', fontSize: '0.95rem' }}>Home</Link>
-          <Link href="/products" style={{ color: 'var(--text-secondary)', fontWeight: '500', fontSize: '0.95rem' }}>Semua Produk</Link>
-          <Link href="/tentang" style={{ color: 'var(--text-secondary)', fontWeight: '500', fontSize: '0.95rem' }}>Tentang</Link>
-          <Link href="/kontak" style={{ color: 'var(--text-secondary)', fontWeight: '500', fontSize: '0.95rem' }}>Kontak</Link>
+          <a href="#" style={{ color: 'var(--text-primary)', fontWeight: '600', fontSize: '0.95rem' }}>Home</a>
+          <a href="#produk" style={{ color: 'var(--text-secondary)', fontWeight: '500', fontSize: '0.95rem' }}>Produk</a>
+          <a href="#tentang" style={{ color: 'var(--text-secondary)', fontWeight: '500', fontSize: '0.95rem' }}>Tentang</a>
+          <a href="#kontak" style={{ color: 'var(--text-secondary)', fontWeight: '500', fontSize: '0.95rem' }}>Kontak</a>
           
           {isAuth && (
             <Link href="/admin" className="btn" style={{ background: 'var(--primary)', color: 'white', padding: '8px 16px', fontSize: '0.9rem' }}>

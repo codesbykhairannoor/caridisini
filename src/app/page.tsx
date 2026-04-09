@@ -1,13 +1,11 @@
 import Header from "@/components/Header";
 import ProductCard from "@/components/ProductCard";
 import prisma from "@/lib/prisma";
-import { Search, ShoppingBag, Sparkles, TrendingUp } from "lucide-react";
-import Link from "next/link";
+import { Search, ShoppingBag, Sparkles, TrendingUp, Info, Target, Users, Mail, MessageCircle, Instagram } from "lucide-react";
 
 export const revalidate = 0;
 
 export default async function Home() {
-  const categories = await prisma.category.findMany();
   const products = await prisma.product.findMany({
     include: {
       category: true,
@@ -21,102 +19,59 @@ export default async function Home() {
     <>
       <Header />
       <main>
-        {/* Clean Animated Hero Section */}
-        <section className="hero-white-orange">
-          {/* Animated Background Blobs */}
+        {/* Compact Hero Section */}
+        <section className="hero-white-orange" style={{ paddingBottom: '80px' }}>
           <div className="blob" style={{ top: '-100px', right: '-100px', background: 'radial-gradient(circle, rgba(238, 77, 45, 0.15) 0%, transparent 70%)' }}></div>
-          <div className="blob" style={{ bottom: '-150px', left: '-100px', background: 'radial-gradient(circle, rgba(255, 142, 83, 0.1) 0%, transparent 70%)', animationDelay: '-5s' }}></div>
           
-          {/* Decorative Floating Elements */}
-          <div style={{ position: 'absolute', top: '15%', right: '15%', animation: 'float 6s ease-in-out infinite', opacity: 0.1, color: 'var(--primary)' }}>
-            <ShoppingBag size={100} />
-          </div>
-          <div style={{ position: 'absolute', bottom: '20%', left: '10%', animation: 'float 8s ease-in-out infinite', opacity: 0.08, animationDelay: '1s', color: 'var(--primary)' }}>
-            <Sparkles size={120} />
-          </div>
-
           <div className="container" style={{ position: 'relative', zIndex: 1, textAlign: 'center' }}>
             <div className="animate-fade-up" style={{ 
               display: 'inline-flex', 
               alignItems: 'center', 
               gap: '8px', 
               background: 'var(--primary-light)', 
-              padding: '8px 20px', 
+              padding: '6px 16px', 
               borderRadius: '20px',
-              fontSize: '0.875rem',
+              fontSize: '0.75rem',
               fontWeight: '700',
-              marginBottom: '32px',
+              marginBottom: '24px',
               color: 'var(--primary)',
-              boxShadow: '0 4px 15px rgba(238, 77, 45, 0.1)'
             }}>
-              <Sparkles size={16} />
+              <Sparkles size={14} />
               Platform Kurasi Affiliate Terpercaya
             </div>
 
-            <h1 className="animate-fade-up" style={{ 
-              fontSize: 'clamp(3rem, 7vw, 4.5rem)', 
-              fontWeight: '850', 
-              marginBottom: '24px',
-              lineHeight: '1.1',
-              letterSpacing: '-0.04em',
-              color: 'var(--text-primary)',
-              animationDelay: '0.1s'
-            }}>
+            <h1 className="animate-fade-up">
               Temukan Barang Impian <br /> 
-              di <span className="text-gradient-orange">CariDisni</span>
+              di <span className="text-gradient-orange">CariDisini</span>
             </h1>
             
-            <p className="animate-fade-up" style={{ 
-              fontSize: '1.25rem', 
-              maxWidth: '650px',
-              margin: '0 auto 48px',
-              lineHeight: '1.6',
-              color: 'var(--text-secondary)',
-              fontWeight: '400',
-              animationDelay: '0.2s'
-            }}>
-              Belanja cerdas dengan koleksi produk pilihan terbaik dan diskon paling menguntungkan dari Shopee, dikurasi khusus untuk Anda.
+            <p className="animate-fade-up" style={{ maxWidth: '600px', margin: '0 auto 40px' }}>
+              Belanja cerdas dengan koleksi produk pilihan terbaik dan diskon paling menguntungkan dari Shopee.
             </p>
 
-            <div className="animate-fade-up" style={{ 
-              maxWidth: '680px', 
-              margin: '0 auto', 
-              position: 'relative',
-              animationDelay: '0.3s'
-            }}>
+            {/* Sticky Search Position */}
+            <div className="animate-fade-up" style={{ maxWidth: '680px', margin: '0 auto', position: 'relative' }}>
               <div style={{ 
                 position: 'relative',
                 background: 'white',
                 borderRadius: '50px',
-                padding: '8px',
+                padding: '6px',
                 boxShadow: '0 25px 50px -12px rgba(238, 77, 45, 0.15)',
                 border: '1px solid var(--border-color)',
                 display: 'flex',
                 alignItems: 'center'
               }}>
-                <div style={{ padding: '0 24px' }}>
-                  <Search size={22} color="var(--text-secondary)" />
+                <div style={{ padding: '0 16px' }}>
+                  <Search size={20} color="var(--text-secondary)" />
                 </div>
                 <input 
                   type="text" 
-                  placeholder="Cari ribuan barang berdiskon di sini..." 
+                  placeholder="Cari barang berdiskon..." 
                   className="input-field"
-                  style={{ 
-                    border: 'none',
-                    padding: '16px 0',
-                    fontSize: '1.1rem',
-                    boxShadow: 'none',
-                    background: 'transparent'
-                  }}
+                  style={{ border: 'none', padding: '12px 0', fontSize: '1rem', boxShadow: 'none', background: 'transparent' }}
                 />
-                <button className="btn btn-primary" style={{
-                  borderRadius: '40px',
-                  padding: '16px 36px',
-                  fontSize: '1rem',
-                  fontWeight: '700',
-                  boxShadow: '0 10px 20px rgba(238, 77, 45, 0.2)'
-                }}>
-                  Cari Sekarang
+                <button className="btn btn-primary" style={{ borderRadius: '40px', padding: '12px 24px', fontSize: '0.9rem', fontWeight: '700' }}>
+                  Cari
                 </button>
               </div>
             </div>
@@ -124,52 +79,86 @@ export default async function Home() {
         </section>
 
         {/* Product Grid Section */}
-        <div style={{ marginTop: '40px', position: 'relative', zIndex: 10 }}>
-
-          {/* Product Grid Section */}
-          <section className="container" style={{ paddingBottom: '100px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '32px' }}>
-              <div>
-                <h2 style={{ fontSize: '1.75rem', fontWeight: '800' }}>🔥 Penawaran Hari Ini</h2>
-                <p style={{ color: 'var(--text-secondary)', marginTop: '4px' }}>Produk terkurasi dengan harga terendah</p>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--primary)', fontWeight: '600', fontSize: '0.875rem' }}>
-                <TrendingUp size={18} />
-                Terlaris Minggu Ini
-              </div>
+        <section id="produk" className="container" style={{ paddingBottom: '100px', marginTop: '-40px', position: 'relative', zIndex: 10 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
+            <div>
+              <h2 style={{ fontSize: 'clamp(1.25rem, 5vw, 1.75rem)', fontWeight: '800' }}>🔥 Penawaran Hari Ini</h2>
             </div>
+            <div className="hide-mobile" style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--primary)', fontWeight: '600', fontSize: '0.875rem' }}>
+              <TrendingUp size={18} />
+              Terlaris
+            </div>
+          </div>
 
-            {products.length > 0 ? (
-              <div style={{ 
-                display: 'grid', 
-                gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', 
-                gap: '32px' 
-              }}>
-                {products.map(product => (
-                  <ProductCard 
-                    key={product.id}
-                    id={product.id}
-                    title={product.title}
-                    imageUrl={product.imageUrl}
-                    originalPrice={product.originalPrice}
-                    price={product.price}
-                    shopeeUrl={product.shopeeUrl}
-                    categoryName={product.category?.name}
-                  />
-                ))}
+          {products.length > 0 ? (
+            <div className="product-grid">
+              {products.map(product => (
+                <ProductCard 
+                  key={product.id}
+                  id={product.id}
+                  title={product.title}
+                  imageUrl={product.imageUrl}
+                  originalPrice={product.originalPrice}
+                  price={product.price}
+                  shopeeUrl={product.shopeeUrl}
+                  categoryName={product.category?.name}
+                />
+              ))}
+            </div>
+          ) : (
+            <div style={{ textAlign: 'center', padding: '80px 0', background: 'var(--bg-card)', borderRadius: 'var(--radius-lg)', border: '1px solid var(--border-color)' }}>
+               <h3 style={{ fontSize: '1.25rem', marginBottom: '8px', fontWeight: '700' }}>Belum ada produk</h3>
+               <p style={{ color: 'var(--text-secondary)' }}>Cek kembali nanti!</p>
+            </div>
+          )}
+        </section>
+
+        {/* Tentang Section */}
+        <section id="tentang" style={{ background: 'white', padding: '100px 0', borderTop: '1px solid var(--border-color)' }}>
+          <div className="container" style={{ maxWidth: '1000px' }}>
+             <div style={{ textAlign: 'center', marginBottom: '60px' }}>
+                <h2 style={{ fontSize: '2.5rem', fontWeight: '850', marginBottom: '16px' }}>Tentang CariDisni</h2>
+                <p style={{ color: 'var(--text-secondary)', fontSize: '1.1rem' }}>Destinasi kurasi produk Shopee terpercaya untuk belanja lebih cerdas.</p>
+             </div>
+             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '32px' }}>
+                <div className="card" style={{ padding: '32px' }}>
+                   <Target className="text-primary" style={{ marginBottom: '16px' }} />
+                   <h3 style={{ marginBottom: '12px' }}>Visi Kami</h3>
+                   <p style={{ color: 'var(--text-secondary)' }}>Menjadi jembatan utama antara pembeli cerdas dan penawaran terbaik di Shopee.</p>
+                </div>
+                <div className="card" style={{ padding: '32px' }}>
+                   <Users className="text-primary" style={{ marginBottom: '16px' }} />
+                   <h3 style={{ marginBottom: '12px' }}>Tim Ahli</h3>
+                   <p style={{ color: 'var(--text-secondary)' }}>Dikelola oleh kurator belanja yang spesialis mencari diskon tersembunyi.</p>
+                </div>
+             </div>
+          </div>
+        </section>
+
+        {/* Kontak Section */}
+        <section id="kontak" style={{ padding: '100px 0', background: 'var(--bg-color)' }}>
+           <div className="container" style={{ textAlign: 'center' }}>
+              <h2 style={{ fontSize: '2.5rem', fontWeight: '850', marginBottom: '40px' }}>Hubungi Kami</h2>
+              <div style={{ display: 'flex', justifyContent: 'center', gap: '32px', flexWrap: 'wrap' }}>
+                 <a href="#" style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--text-primary)', fontWeight: '600' }}>
+                    <Instagram size={24} /> Instagram
+                 </a>
+                 <a href="#" style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--text-primary)', fontWeight: '600' }}>
+                    <MessageCircle size={24} /> WhatsApp
+                 </a>
+                 <a href="mailto:info@caridisni.com" style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--text-primary)', fontWeight: '600' }}>
+                    <Mail size={24} /> Email
+                 </a>
               </div>
-            ) : (
-              <div style={{ textAlign: 'center', padding: '80px 0', background: 'var(--bg-card)', borderRadius: 'var(--radius-lg)', border: '1px solid var(--border-color)' }}>
-                 <div style={{ background: 'var(--primary-light)', color: 'var(--primary)', width: '64px', height: '64px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifySelf: 'center', justifyContent: 'center', marginBottom: '16px' }}>
-                   <ShoppingBag size={32} />
-                 </div>
-                 <h3 style={{ fontSize: '1.25rem', marginBottom: '8px', fontWeight: '700' }}>Belum ada produk</h3>
-                 <p style={{ color: 'var(--text-secondary)', marginBottom: '24px' }}>Cek kembali nanti atau login sebagai admin untuk menambah barang.</p>
-                 <Link href="/login" className="btn" style={{ border: '1px solid var(--border-color)' }}>Login Admin</Link>
-              </div>
-            )}
-          </section>
-        </div>
+           </div>
+        </section>
+
+        {/* Footer */}
+        <footer style={{ padding: '40px 0', textAlign: 'center', borderTop: '1px solid var(--border-color)', background: 'white' }}>
+           <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
+              &copy; {new Date().getFullYear()} CariDisni. Semua hak cipta dilindungi.
+           </p>
+        </footer>
       </main>
     </>
   );

@@ -70,42 +70,42 @@ export default function ProductCard({
           )}
         </div>
 
-        <div style={{ padding: 'clamp(12px, 3vw, 20px)', flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+        <div style={{ padding: 'clamp(8px, 3vw, 20px)', flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
           <h3 style={{ 
-            fontSize: 'clamp(0.9rem, 2.5vw, 1.1rem)', 
+            fontSize: 'clamp(0.85rem, 2.5vw, 1.1rem)', 
             fontWeight: '700', 
-            marginBottom: '8px', 
+            marginBottom: '4px', 
             color: 'var(--text-primary)',
-            lineHeight: '1.4',
+            lineHeight: '1.3',
             display: '-webkit-box',
             WebkitLineClamp: '2',
             WebkitBoxOrient: 'vertical',
             overflow: 'hidden',
-            minHeight: '2.8em'
+            minHeight: '2.6em'
           }}>
             {title}
           </h3>
           
           <div style={{ marginTop: 'auto' }}>
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginBottom: '16px', flexWrap: 'wrap' }}>
-              <span style={{ fontSize: 'clamp(1.1rem, 3.5vw, 1.3rem)', fontWeight: '850', color: 'var(--primary)', lineHeight: '1.2' }}>Rp {price}</span>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px', marginBottom: '12px', flexWrap: 'wrap' }}>
+              <span style={{ fontSize: 'clamp(1rem, 3.5vw, 1.3rem)', fontWeight: '850', color: 'var(--primary)', lineHeight: '1.2' }}>Rp {price}</span>
               {originalPrice && (
-                <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', textDecoration: 'line-through', opacity: 0.7 }}>Rp {originalPrice}</span>
+                <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', textDecoration: 'line-through', opacity: 0.7 }}>Rp {originalPrice}</span>
               )}
             </div>
           </div>
         </div>
       </Link>
-      <div style={{ padding: '0 20px 20px 20px' }}>
+      <div style={{ padding: '0 12px 12px 12px' }}>
         <a
           href={shopeeUrl}
           target="_blank"
           rel="noopener noreferrer"
           className="btn btn-primary"
-          style={{ width: '100%', fontSize: '0.9rem' }}
+          style={{ width: '100%', fontSize: '0.85rem', padding: '10px 12px' }}
           onClick={() => trackProductClick(id)}
         >
-          Beli di Shopee
+          Beli
         </a>
       </div>
     </div>
