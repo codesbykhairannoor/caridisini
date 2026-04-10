@@ -378,8 +378,8 @@ export async function deleteProduct(id: number) {
 }
 
 // AUTH ACTIONS
-const ADMIN_EMAIL = "admin@caridisni.com";
-const ADMIN_PASS = "admin123";
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "admin@caridisni.com";
+const ADMIN_PASS = process.env.ADMIN_PASS || "admin123";
 const AUTH_COOKIE = "caridisni_session";
 
 export async function login(formData: FormData) {
