@@ -63,7 +63,7 @@ export default function AdminDashboard({ products, categories }: AdminDashboardP
         padding: 'clamp(16px, 5vw, 40px)',
         paddingTop: 'clamp(80px, 12vw, 40px)' // Space for mobile hamburger bar
       }}>
-        <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
+        <div style={{ width: '100%' }}>
           <header style={{ marginBottom: 'clamp(20px, 6vw, 40px)' }}>
             <h1 style={{ fontSize: 'clamp(1.5rem, 5vw, 2.25rem)', fontWeight: '800', color: '#111827' }}>
               {activeTab === 'overview' && 'Selamat Datang, Admin! 👋'}

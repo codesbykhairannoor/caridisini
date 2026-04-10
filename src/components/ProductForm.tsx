@@ -156,7 +156,7 @@ export default function ProductForm({ initialData, onSuccess, onCancel }: Produc
   };
 
   return (
-    <div style={{ backgroundColor: '#fff', borderRadius: '20px', boxShadow: '0 10px 30px rgba(0,0,0,0.04)', border: '1px solid #f1f5f9', maxWidth: '1200px', margin: '0 auto' }}>
+    <div style={{ backgroundColor: '#fff', borderRadius: '20px', boxShadow: '0 10px 30px rgba(0,0,0,0.04)', border: '1px solid #f1f5f9', width: '100%' }}>
       
       {/* Header Compact */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 24px', borderBottom: '1px solid #f1f5f9' }}>
