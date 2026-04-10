@@ -352,25 +352,46 @@ function extractMetadata($: cheerio.CheerioAPI) {
 }
 
 export async function scrapeProductData(url: string) {
-  console.log(`\n[Scraper v8 Serverless] 🚀 Target: ${url}`);
+  console.log(`\n[Scraper v8.5 Dual-Axios] 🚀 Target: ${url}`);
   
   let cleanUrl = url.split('?')[0];
   if (url.includes('shope.ee') || url.includes('s.shopee.co.id')) cleanUrl = url; 
 
-  // Follow redirects recursive (Stage 0)
   const finalUrl = await resolveUrl(cleanUrl);
   console.log(`[Scraper] Resolved Final URL: ${finalUrl}`);
   
-  // --- STAGE 1: AZURE/MOBILE AXIOS STEALTH ---
-  console.log(`[Scraper] ⚡ Stage 1: Fast Axios dengan Mobile Identity...`);
+  // --- PASS 1: GOOGLEBOT / DESKTOP (Best for long standard links) ---
+  console.log(`[Scraper] 🛡️ Pass 1: Mencoba Akses Desktop (Googlebot)...`);
+  try {
+    const response1 = await axios.get(finalUrl, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+        'Referer': 'https://shopee.co.id/'
+      },
+      timeout: 10000
+    });
+
+    const $1 = cheerio.load(response1.data);
+    const data1 = extractMetadata($1);
+
+    if (data1.title && !data1.title.toLowerCase().includes('login') && !data1.title.toLowerCase().includes('shopee indonesia')) {
+      console.log(`[Scraper] ✅ Pass 1 Berhasil: ${data1.title}`);
+      return { success: true, data: data1 };
+    }
+  } catch (err: any) {
+    console.log(`[Scraper] ⚠️ Pass 1 Ditolak/Gagal (${err.response?.status}). Lanjut ke Pass 2...`);
+  }
+
+  // --- PASS 2: MOBILE STEALTH + BREADCRUMBS (Best for short links/redirects) ---
+  console.log(`[Scraper] 📱 Pass 2: Mencari remah-remah (Breadcrumbs) via Mobile Android...`);
   try {
     const randomUA = USER_AGENTS[Math.floor(Math.random() * USER_AGENTS.length)];
     
-    // We use mobile/Android headers because Shopee's mobile web leaks more LD+JSON data even when showing Login
-    const response = await axios.get(finalUrl, {
+    const response2 = await axios.get(finalUrl, {
       headers: {
         'User-Agent': randomUA,
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
         'Accept-Language': 'id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7',
         'Cache-Control': 'max-age=0',
         'Sec-Ch-Ua': '"Not A(Brand";v="99", "Google Chrome";v="121", "Chromium";v="121"',
@@ -386,35 +407,28 @@ export async function scrapeProductData(url: string) {
       timeout: 12000
     });
 
-    const html = response.data;
-    const $ = cheerio.load(html);
-    const data = extractMetadata($);
+    const $2 = cheerio.load(response2.data);
+    const data2 = extractMetadata($2);
 
-    // Vercel Fallback Logic
-    // Even if we hit the Login page, extractMetadata tries to parse BreadcrumbList
-    // If the data has at least a title (from Breadcrumbs), we count it as a partial success!
-    if (data.title && !data.title.toLowerCase().includes('login') && !data.title.toLowerCase().includes('shopee indonesia')) {
-      console.log(`[Scraper] ✅ Stage 1 Berhasil menemukan data: ${data.title}`);
-      
-      // If price is missing but title exists, add a prompt
-      if (!data.price) {
-        console.log(`[Scraper] ⚠️ Harga tidak tersedia (Terhalang Login), namun Nama Produk selamat!`);
+    if (data2.title && !data2.title.toLowerCase().includes('login') && !data2.title.toLowerCase().includes('shopee indonesia')) {
+      console.log(`[Scraper] ✅ Pass 2 (Breadcrumbs) Berhasil: ${data2.title}`);
+      if (!data2.price) {
+        console.log(`[Scraper] ⚠️ Harga tidak dapat otomatis diisi (Halaman login melindungi harga).`);
       }
-      
-      return { success: true, data };
+      return { success: true, data: data2 };
     }
 
-    console.log(`[Scraper] ❌ Stage 1 Gagal menarik data bermakna. Halaman mungkin kosong atau terblokir penuh.`);
+    console.log(`[Scraper] ❌ Pass 2 Gagal. Fitur otomatis diblokir penuh.`);
     return {
       success: false,
-      error: "Shopee mengunci halaman produk (Login Wall). Ekstraksi data otomatis gagal."
+      error: "Shopee mengunci URL ini (Bot Protection). Nama dan harga harus diisi manual."
     };
 
   } catch (err: any) {
-    console.error(`[Scraper] 💀 Error Stage 1:`, err.message);
+    console.error(`[Scraper] 💀 Error Pass 2:`, err.message);
     return {
        success: false,
-       error: `Gagalan koneksi: ${err.response?.status || err.message}`
+       error: `Sistem diblokir oleh Shopee (${err.response?.status || err.message}).`
     };
   }
 }
