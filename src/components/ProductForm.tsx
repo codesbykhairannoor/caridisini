@@ -56,8 +56,14 @@ export default function ProductForm({ initialData, onSuccess, onCancel }: Produc
     }
     setLoading(true);
     setMessage(null);
+    
+    // Browser Console Logging (F12)
+    console.log(`[Client] 🔍 Memulai pencarian data untuk Shopee URL...`);
+    
     try {
       const result = await scrapeProductData(formData.shopeeUrl);
+      console.log(`[Client] 📡 Server merespons:`, result);
+
       if (result.success && result.data) {
         const { title, description, imageUrl, images, price, categoryName } = result.data;
         setFormData(prev => ({
@@ -71,10 +77,12 @@ export default function ProductForm({ initialData, onSuccess, onCancel }: Produc
         }));
         setMessage({ text: "Autofill berhasil!", type: 'success' });
       } else {
-        setMessage({ text: "Shopee memblokir akses otomatis. Silakan isi manual.", type: 'error' });
+        // Show specific server error instead of generic message
+        setMessage({ text: result.error || "Shopee memblokir akses otomatis (Bot Protection).", type: 'error' });
       }
     } catch (err) {
-      setMessage({ text: "Error scraping data", type: 'error' });
+      console.error(`[Client] ❌ Error saat memanggil server action:`, err);
+      setMessage({ text: "Terjadi kesalahan koneksi ke server.", type: 'error' });
     } finally {
       setLoading(false);
     }

@@ -9,7 +9,7 @@ interface AddProductTabProps {
 
 export default function AddProductTab({ initialData, onSuccess, onCancel }: AddProductTabProps) {
   return (
-    <div style={{ maxWidth: '900px' }}>
+    <div style={{ width: '100%' }}>
       {!initialData && (
         <div style={{ backgroundColor: '#fff7ed', border: '1px solid #ffedd5', padding: '20px', borderRadius: '16px', marginBottom: '32px' }}>
           <h4 style={{ color: '#9a3412', fontWeight: '700', fontSize: '0.95rem', marginBottom: '8px' }}>Pusat Input Produk</h4>

@@ -301,29 +301,26 @@ function extractMetadata($: cheerio.CheerioAPI) {
 }
 
 export async function scrapeProductData(url: string) {
-  // 1. Sanitize URL (Remove tracking but keep product path)
+  console.log(`\n[Scraper v4] 🚀 Memulai pencarian untuk URL: ${url}`);
+  
+  // 1. Sanitize URL
   let cleanUrl = url.split('?')[0];
-  if (url.includes('shope.ee')) cleanUrl = url; // Shortlinks need full form
+  if (url.includes('shope.ee')) cleanUrl = url; 
 
+  console.log(`[Scraper] 🔗 URL Bersih: ${cleanUrl}`);
+  
   const finalUrl = await resolveUrl(cleanUrl);
+  console.log(`[Scraper] 📍 URL Final Terdeteksi: ${finalUrl}`);
+
   const randomUA = USER_AGENTS[Math.floor(Math.random() * USER_AGENTS.length)];
   
-  // --- STAGE 1: FAST SCRAPE (AXIOS) ---
+  // --- STAGE 1: AXIOS (FAST) ---
+  console.log(`[Scraper] ⚡ Stage 1 (Axios): Mencoba akses cepat...`);
   try {
     const response = await axios.get(finalUrl, {
       headers: {
         'User-Agent': randomUA,
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
-        'Accept-Language': 'id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7',
-        'Cache-Control': 'max-age=0',
-        'Sec-Ch-Ua': '"Not A(Brand";v="99", "Google Chrome";v="121", "Chromium";v="121"',
-        'Sec-Ch-Ua-Mobile': '?0',
-        'Sec-Ch-Ua-Platform': '"Windows"',
-        'Sec-Fetch-Dest': 'document',
-        'Sec-Fetch-Mode': 'navigate',
-        'Sec-Fetch-Site': 'none',
-        'Sec-Fetch-User': '?1',
-        'Upgrade-Insecure-Requests': '1',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
         'Referer': 'https://www.google.com/'
       },
       timeout: 8000
@@ -333,52 +330,105 @@ export async function scrapeProductData(url: string) {
     const data = extractMetadata($);
 
     if (data.title && data.imageUrl && !data.title.toLowerCase().includes('shopee indonesia')) {
+      console.log(`[Scraper] ✅ Stage 1 BERHASIL! Judul: ${data.title}`);
       return { success: true, data };
     }
-  } catch (err) {
-    console.log("Stage 1 (Axios) blocked or failed, attempting Stage 2 (Playwright Stealth)...");
+    console.log(`[Scraper] ⚠️ Stage 1 Gagal: Data tidak lengkap atau dialihkan.`);
+  } catch (err: any) {
+    console.log(`[Scraper] ❌ Stage 1 BLOKIR! Status: ${err.response?.status || 'Unknown'}`);
   }
 
-  // --- STAGE 2: DEEP SCAN (PLAYWRIGHT) ---
+  // --- STAGE 2: PLAYWRIGHT (DEEP STEALTH) ---
+  console.log(`[Scraper] 🕵️ Stage 2 (Playwright Stealth): Meluncurkan Browser...`);
   let browser;
   try {
     browser = await chromium.launch({ 
       headless: true,
-      args: ['--disable-blink-features=AutomationControlled', '--no-sandbox']
+      args: [
+        '--disable-blink-features=AutomationControlled', 
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-web-security',
+        '--disable-features=IsolateOrigins,site-per-process',
+      ]
     });
-    const context = await browser.newContext({
-      userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
-    });
-    const page = await context.newPage();
     
-    // Stealth injection
-    await page.addInitScript(() => {
-       Object.defineProperty(navigator, 'webdriver', { get: () => undefined });
+    // Mobile Emulation
+    const context = await browser.newContext({
+      viewport: { width: 390, height: 844 },
+      userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Mobile/15E148 Safari/604.1',
+      deviceScaleFactor: 3,
+      isMobile: true,
+      hasTouch: true,
+      locale: 'id-ID',
     });
 
-    await page.goto(finalUrl, { waitUntil: 'networkidle', timeout: 45000 });
+    const page = await context.newPage();
+    console.log(`[Scraper] 📱 Browser Mobile diluncurkan. Mengakses halaman...`);
+
+    // Stealth Injection
+    await page.addInitScript(() => {
+       Object.defineProperty(navigator, 'webdriver', { get: () => undefined });
+       Object.defineProperty(navigator, 'plugins', { get: () => [1, 2, 3, 4, 5] });
+       // @ts-ignore
+       navigator.chrome = { runtime: {} };
+    });
+
+    const referer = ['https://www.google.com/', 'https://www.facebook.com/', 'https://pinteres.com/'].sort(() => Math.random() - 0.5)[0];
+
+    await page.setExtraHTTPHeaders({
+       'Accept-Language': 'id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7',
+       'Referer': referer,
+       'Sec-Fetch-Dest': 'document',
+       'Sec-Fetch-Mode': 'navigate',
+       'Sec-Fetch-Site': 'cross-site',
+       'Sec-Fetch-User': '?1',
+       'Sec-Ch-Ua': '"Not A(Brand";v="99", "Google Chrome";v="121", "Chromium";v="121"',
+       'Sec-Ch-Ua-Mobile': '?1',
+       'Sec-Ch-Ua-Platform': '"Android"'
+    });
+
+    await page.goto(finalUrl, { waitUntil: 'domcontentloaded', timeout: 35000 });
+    console.log(`[Scraper] ⏳ Menunggu render konten (3.5s)...`);
     
-    // Wait for core content or meta tags to render, or specific price elements
-    await page.waitForSelector('.pqm6_p, ._3n5NQa, [aria-live="polite"], .price', { timeout: 10000 }).catch(() => null);
-    await page.waitForTimeout(2000); 
+    await page.waitForTimeout(3500);
     
     const html = await page.content();
+    
+    // Detailed Captcha/Verify check
+    const isCaptcha = html.toLowerCase().includes('captcha') || html.toLowerCase().includes('verify') || html.toLowerCase().includes('pencurian data');
+    const isLogin = html.toLowerCase().includes('login') && !html.toLowerCase().includes('product');
+
+    if (isCaptcha) {
+      console.log(`[Scraper] 👮 TERDETEKSI CAPTCHA/BOT CHALLENGE!`);
+      throw new Error("Shopee memblokir karena terdeteksi BOT (Captcha Muncul). Coba lagi nanti.");
+    }
+
+    if (isLogin) {
+      console.log(`[Scraper] 🔑 TERDETEKSI REDIRECT LOGIN!`);
+      throw new Error("Shopee mengalihkan ke halaman Login. IP Server mungkin sedang dibatasi.");
+    }
+
     const $ = cheerio.load(html);
     const data = extractMetadata($);
 
-    if (!data.title || data.title.toLowerCase().includes('login')) {
-      throw new Error("Blocked by Shopee Wall");
+    if (!data.title || data.title.toLowerCase().includes('shopee indonesia')) {
+      console.log(`[Scraper] ⚠️ Konten Kosong atau Shopee Landing Page.`);
+      throw new Error("Gagal mengekstrak data. Shopee memblokir konten produk.");
     }
 
+    console.log(`[Scraper] 🏆 Stage 2 BERHASIL! Judul: ${data.title}`);
     return { success: true, data };
   } catch (error: any) {
-    console.error('Hybrid Scraper Error:', error.message);
+    const errorMsg = error.message.includes('Timeout') ? "Waktu tunggu habis (Timeout). Koneksi ke Shopee lambat." : error.message;
+    console.error(`[Scraper] 💀 ERROR:`, errorMsg);
     return {
       success: false,
-      error: 'Shopee memblokir akses otomatis. Silakan masukkan data secara manual.'
+      error: errorMsg || 'Shopee memblokir akses otomatis (Bot Protection).'
     };
   } finally {
     if (browser) await browser.close();
+    console.log(`[Scraper] 🏁 Proses Berakhir.\n`);
   }
 }
 
