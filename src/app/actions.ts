@@ -177,20 +177,52 @@ export async function refreshProductData(id: number) {
   return { success: true };
 }
 
-// Helper to resolve short links and follow redirects manually if needed
+// Robust URL resolver to follow multi-stage redirects (e.g., s.shopee.co.id -> shopee.co.id)
 async function resolveUrl(url: string): Promise<string> {
-  try {
-    const response = await axios.get(url, {
-      maxRedirects: 0,
-      headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' }
-    });
-    return url;
-  } catch (error: any) {
-    if (error.response && error.response.status >= 300 && error.response.status < 400) {
-      return error.response.headers.location || url;
+  let currentUrl = url;
+  let depth = 0;
+  const maxDepth = 5;
+
+  while (depth < maxDepth) {
+    try {
+      const response = await axios.get(currentUrl, {
+        maxRedirects: 0,
+        headers: { 
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
+          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8'
+        },
+        validateStatus: (status) => status >= 200 && status < 400,
+        timeout: 8000
+      });
+
+      if (response.status >= 300 && response.status < 400 && response.headers.location) {
+        let nextUrl = response.headers.location;
+        if (!nextUrl.startsWith('http')) {
+          const urlObj = new URL(currentUrl);
+          nextUrl = `${urlObj.protocol}//${urlObj.host}${nextUrl}`;
+        }
+        currentUrl = nextUrl;
+        depth++;
+        console.log(`[Scraper] Redirecting (${depth}): ${currentUrl}`);
+      } else {
+        break; 
+      }
+    } catch (error: any) {
+      if (error.response && error.response.status >= 300 && error.response.status < 400 && error.response.headers.location) {
+        let nextUrl = error.response.headers.location;
+        if (!nextUrl.startsWith('http')) {
+          const urlObj = new URL(currentUrl);
+          nextUrl = `${urlObj.protocol}//${urlObj.host}${nextUrl}`;
+        }
+        currentUrl = nextUrl;
+        depth++;
+        console.log(`[Scraper] Redirecting (${depth}): ${currentUrl}`);
+      } else {
+        break;
+      }
     }
-    return url;
   }
+  return currentUrl;
 }
 
 const USER_AGENTS = [
@@ -324,9 +356,11 @@ export async function scrapeProductData(url: string) {
   console.log(`[Scraper v7] 🚀 Target: ${url}`);
   
   let cleanUrl = url.split('?')[0];
-  if (url.includes('shope.ee')) cleanUrl = url; 
+  if (url.includes('shope.ee') || url.includes('s.shopee.co.id')) cleanUrl = url; 
 
+  // Follow redirects recursive (Stage 0)
   const finalUrl = await resolveUrl(cleanUrl);
+  console.log(`[Scraper] Resolved Final URL: ${finalUrl}`);
   
   // --- STAGE 1: GOOGLEBOT IDENTITY (HIGH TRUST) ---
   console.log(`[Scraper] 🛡️ Stage 1: Googlebot Identity...`);
@@ -389,9 +423,15 @@ export async function scrapeProductData(url: string) {
     return { success: true, data };
   } catch (error: any) {
     console.error(`[Scraper] 💀 Error:`, error.message);
+    
+    // Better Error Message for missing binaries in production
+    const isMissingBinary = error.message.includes('Executable doesn\'t exist') || error.message.includes('playwright install');
+    
     return {
       success: false,
-      error: error.message || 'Shopee memblokir akses otomatis.'
+      error: isMissingBinary 
+        ? "Deep Scan tidak tersedia di lingkungan server. Gunakan URL produk asli (shopee.co.id/product/...) jika link pendek gagal."
+        : (error.message || 'Shopee memblokir akses otomatis.')
     };
   } finally {
     if (browser) await browser.close();

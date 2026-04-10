@@ -15,6 +15,10 @@ export default async function Home() {
     }
   });
 
+  const categories = await prisma.category.findMany({
+    orderBy: { name: 'asc' }
+  });
+
   return (
     <>
       <main style={{ minHeight: '100vh', position: 'relative' }}>
@@ -94,41 +98,9 @@ export default async function Home() {
           </div>
         </section>
 
-        {/* --- Product Grid Section --- */}
+        {/* --- Product Grid Section with Filters --- */}
         <section id="produk" className="container" style={{ paddingBottom: '120px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '40px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: 'var(--primary)', boxShadow: '0 0 10px var(--primary)' }}></div>
-              <h2 style={{ fontSize: '1.75rem', fontWeight: '800' }}>Penawaran Hari Ini</h2>
-            </div>
-            <div className="hide-mobile" style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--primary)', fontWeight: '700', fontSize: '0.9rem' }}>
-              <TrendingUp size={18} />
-              Hot Recommendations
-            </div>
-          </div>
-
-          {products.length > 0 ? (
-            <div className="product-grid">
-              {products.map(product => (
-                <ProductCard 
-                  key={product.id}
-                  id={product.id}
-                  title={product.title}
-                  description={product.description}
-                  imageUrl={product.imageUrl}
-                  originalPrice={product.originalPrice}
-                  price={product.price}
-                  shopeeUrl={product.shopeeUrl}
-                  categoryName={product.category?.name}
-                />
-              ))}
-            </div>
-          ) : (
-            <div style={{ textAlign: 'center', padding: '100px 0', background: 'white', borderRadius: 'var(--radius-xl)', border: '1px solid var(--border-color)' }}>
-               <h3 style={{ fontSize: '1.5rem', marginBottom: '8px', fontWeight: '700' }}>Belum ada produk</h3>
-               <p style={{ color: 'var(--text-secondary)' }}>Kurasi produk terbaru sedang diproses!</p>
-            </div>
-          )}
+          <ProductContainer initialProducts={products} categories={categories} />
         </section>
 
         {/* Minimalist Footer */}
