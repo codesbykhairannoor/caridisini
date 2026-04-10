@@ -7,7 +7,6 @@ import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import fs from "fs/promises";
 import path from "path";
-import { chromium } from "playwright";
 import { generateProductContent } from "@/lib/ai";
 
 export async function addProduct(formData: FormData) {
@@ -353,7 +352,7 @@ function extractMetadata($: cheerio.CheerioAPI) {
 }
 
 export async function scrapeProductData(url: string) {
-  console.log(`[Scraper v7] 🚀 Target: ${url}`);
+  console.log(`\n[Scraper v8 Serverless] 🚀 Target: ${url}`);
   
   let cleanUrl = url.split('?')[0];
   if (url.includes('shope.ee') || url.includes('s.shopee.co.id')) cleanUrl = url; 
@@ -362,79 +361,61 @@ export async function scrapeProductData(url: string) {
   const finalUrl = await resolveUrl(cleanUrl);
   console.log(`[Scraper] Resolved Final URL: ${finalUrl}`);
   
-  // --- STAGE 1: GOOGLEBOT IDENTITY (HIGH TRUST) ---
-  console.log(`[Scraper] 🛡️ Stage 1: Googlebot Identity...`);
+  // --- STAGE 1: AZURE/MOBILE AXIOS STEALTH ---
+  console.log(`[Scraper] ⚡ Stage 1: Fast Axios dengan Mobile Identity...`);
   try {
+    const randomUA = USER_AGENTS[Math.floor(Math.random() * USER_AGENTS.length)];
+    
+    // We use mobile/Android headers because Shopee's mobile web leaks more LD+JSON data even when showing Login
     const response = await axios.get(finalUrl, {
       headers: {
-        'User-Agent': 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-        'Referer': 'https://shopee.co.id/'
+        'User-Agent': randomUA,
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+        'Accept-Language': 'id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7',
+        'Cache-Control': 'max-age=0',
+        'Sec-Ch-Ua': '"Not A(Brand";v="99", "Google Chrome";v="121", "Chromium";v="121"',
+        'Sec-Ch-Ua-Mobile': '?1',
+        'Sec-Ch-Ua-Platform': '"Android"',
+        'Sec-Fetch-Dest': 'document',
+        'Sec-Fetch-Mode': 'navigate',
+        'Sec-Fetch-Site': 'none',
+        'Sec-Fetch-User': '?1',
+        'Upgrade-Insecure-Requests': '1',
+        'Referer': 'https://www.google.com/'
       },
-      timeout: 10000
+      timeout: 12000
     });
 
-    const $ = cheerio.load(response.data);
-    const data = extractMetadata($);
-
-    if (data.title && data.imageUrl && !data.title.toLowerCase().includes('login') && !data.title.toLowerCase().includes('shopee indonesia')) {
-      console.log(`[Scraper] ✅ Stage 1 Berhasil: ${data.title}`);
-      return { success: true, data };
-    }
-  } catch (err: any) {
-    console.log(`[Scraper] ⚠️ Stage 1 Terdeteksi/Gagal. Status: ${err.response?.status || 'ERR'}`);
-  }
-
-  // --- STAGE 2: SIMPLE DESKTOP PLAYWRIGHT ---
-  console.log(`[Scraper] 🕵️ Stage 2: Desktop Playwright...`);
-  let browser;
-  try {
-    browser = await chromium.launch({ 
-      headless: true,
-      args: ['--disable-blink-features=AutomationControlled', '--no-sandbox']
-    });
-    
-    const context = await browser.newContext({
-      userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
-    });
-
-    const page = await context.newPage();
-    
-    // Minimum Stealth
-    await page.addInitScript(() => {
-       Object.defineProperty(navigator, 'webdriver', { get: () => undefined });
-    });
-
-    await page.goto(finalUrl, { waitUntil: 'domcontentloaded', timeout: 30000 });
-    await page.waitForTimeout(3000); // Allow JS render
-    
-    const html = await page.content();
+    const html = response.data;
     const $ = cheerio.load(html);
     const data = extractMetadata($);
 
-    const isLogin = data.title.toLowerCase().includes('login') || data.title.toLowerCase().includes('shopee indonesia') || html.includes('captcha');
-
-    if (isLogin) {
-      console.log(`[Scraper] 👮 Terblokir Security Wall.`);
-      throw new Error("Shopee memblokir akses otomatis (Bot Protection).");
+    // Vercel Fallback Logic
+    // Even if we hit the Login page, extractMetadata tries to parse BreadcrumbList
+    // If the data has at least a title (from Breadcrumbs), we count it as a partial success!
+    if (data.title && !data.title.toLowerCase().includes('login') && !data.title.toLowerCase().includes('shopee indonesia')) {
+      console.log(`[Scraper] ✅ Stage 1 Berhasil menemukan data: ${data.title}`);
+      
+      // If price is missing but title exists, add a prompt
+      if (!data.price) {
+        console.log(`[Scraper] ⚠️ Harga tidak tersedia (Terhalang Login), namun Nama Produk selamat!`);
+      }
+      
+      return { success: true, data };
     }
 
-    console.log(`[Scraper] ✅ Stage 2 Berhasil: ${data.title}`);
-    return { success: true, data };
-  } catch (error: any) {
-    console.error(`[Scraper] 💀 Error:`, error.message);
-    
-    // Better Error Message for missing binaries in production
-    const isMissingBinary = error.message.includes('Executable doesn\'t exist') || error.message.includes('playwright install');
-    
+    console.log(`[Scraper] ❌ Stage 1 Gagal menarik data bermakna. Halaman mungkin kosong atau terblokir penuh.`);
     return {
       success: false,
-      error: isMissingBinary 
-        ? "Deep Scan tidak tersedia di lingkungan server. Gunakan URL produk asli (shopee.co.id/product/...) jika link pendek gagal."
-        : (error.message || 'Shopee memblokir akses otomatis.')
+      error: "Shopee mengunci halaman produk (Login Wall). Ekstraksi data otomatis gagal."
     };
-  } finally {
-    if (browser) await browser.close();
+
+  } catch (err: any) {
+    console.error(`[Scraper] 💀 Error Stage 1:`, err.message);
+    return {
+       success: false,
+       error: `Gagalan koneksi: ${err.response?.status || err.message}`
+    };
   }
 }
 
