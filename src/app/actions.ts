@@ -360,10 +360,22 @@ export async function scrapeProductData(url: string) {
   const finalUrl = await resolveUrl(cleanUrl);
   console.log(`[Scraper] Resolved Final URL: ${finalUrl}`);
   
+  // --- URL SANITIZER (Bypass 'opaanlp' Tracking Pages) ---
+  let scrapeUrl = finalUrl;
+  const match1 = finalUrl.match(/(?:opaanlp|product|universal-link)\/(?:[^\/]+\/)?(\d+)\/(\d+)/i);
+  const match2 = finalUrl.match(/-i\.(\d+)\.(\d+)/i);
+  
+  if (match1) {
+    scrapeUrl = `https://shopee.co.id/product/${match1[1]}/${match1[2]}`;
+  } else if (match2) {
+    scrapeUrl = `https://shopee.co.id/product/${match2[1]}/${match2[2]}`;
+  }
+  console.log(`[Scraper] Sanitized Scrape URL: ${scrapeUrl}`);
+
   // --- PASS 1: GOOGLEBOT / DESKTOP (Best for long standard links) ---
   console.log(`[Scraper] 🛡️ Pass 1: Mencoba Akses Desktop (Googlebot)...`);
   try {
-    const response1 = await axios.get(finalUrl, {
+    const response1 = await axios.get(scrapeUrl, {
       headers: {
         'User-Agent': 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)',
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
@@ -388,7 +400,7 @@ export async function scrapeProductData(url: string) {
   try {
     const randomUA = USER_AGENTS[Math.floor(Math.random() * USER_AGENTS.length)];
     
-    const response2 = await axios.get(finalUrl, {
+    const response2 = await axios.get(scrapeUrl, {
       headers: {
         'User-Agent': randomUA,
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
