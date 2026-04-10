@@ -1,7 +1,7 @@
 'use client';
 
-import React from 'react';
-import { LayoutDashboard, Package, PlusCircle, LogOut, ArrowLeft } from 'lucide-react';
+import React, { useState } from 'react';
+import { LayoutDashboard, Package, PlusCircle, LogOut, ArrowLeft, Menu, X } from 'lucide-react';
 import { logout } from '@/app/actions';
 
 interface SidebarProps {
@@ -10,26 +10,97 @@ interface SidebarProps {
 }
 
 export default function AdminSidebar({ activeTab, setActiveTab }: SidebarProps) {
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
+
   const menuItems = [
     { id: 'overview', label: 'Overview', icon: LayoutDashboard },
     { id: 'products', label: 'Produk Saya', icon: Package },
     { id: 'add', label: 'Tambah Baru', icon: PlusCircle },
   ];
 
+  const handleTabClick = (id: string) => {
+    setActiveTab(id);
+    setIsMobileOpen(false);
+  };
+
   return (
     <>
-      {/* Vertical Sidebar - Hidden on Mobile */}
-      <aside className="hide-mobile" style={{ 
-        width: '280px', 
-        backgroundColor: 'white', 
-        borderRight: '1px solid var(--border-color)',
-        display: 'flex',
-        flexDirection: 'column',
-        height: '100vh',
-        position: 'sticky',
+      {/* Mobile Hamburger Toggle Bar */}
+      <div className="show-mobile" style={{
+        position: 'fixed',
         top: 0,
-        padding: '30px 20px'
+        left: 0,
+        right: 0,
+        height: '60px',
+        backgroundColor: 'white',
+        borderBottom: '1px solid var(--border-color)',
+        display: 'flex',
+        alignItems: 'center',
+        padding: '0 20px',
+        zIndex: 900,
+        boxShadow: '0 2px 10px rgba(0,0,0,0.02)'
       }}>
+        <button 
+          onClick={() => setIsMobileOpen(true)}
+          style={{ 
+            background: 'none', 
+            border: 'none', 
+            color: 'var(--text-primary)',
+            padding: '8px',
+            marginLeft: '-8px',
+            cursor: 'pointer'
+          }}
+        >
+          <Menu size={24} />
+        </button>
+        <div style={{ marginLeft: '12px', fontWeight: '800', color: 'var(--primary)', fontSize: '1.1rem' }}>
+          Admin Panel
+        </div>
+      </div>
+
+      {/* Mobile Drawer Overlay */}
+      {isMobileOpen && (
+        <div 
+          onClick={() => setIsMobileOpen(false)}
+          className="show-mobile"
+          style={{
+            position: 'fixed',
+            inset: 0,
+            backgroundColor: 'rgba(0,0,0,0.4)',
+            backdropFilter: 'blur(4px)',
+            zIndex: 1000
+          }}
+        />
+      )}
+
+      {/* Main Sidebar (Desktop & Mobile Drawer) */}
+      <aside 
+        className={`${isMobileOpen ? 'admin-drawer flex-mobile' : 'hide-mobile'}`}
+        style={{ 
+          width: '280px', 
+          backgroundColor: 'white', 
+          borderRight: '1px solid var(--border-color)',
+          display: 'flex',
+          flexDirection: 'column',
+          height: '100vh',
+          position: isMobileOpen ? 'fixed' : 'sticky',
+          top: 0,
+          left: 0,
+          padding: '30px 20px',
+          zIndex: 1001,
+          boxShadow: isMobileOpen ? '20px 0 50px rgba(0,0,0,0.1)' : 'none'
+        }}
+      >
+        {/* Close Button on Mobile Drawer */}
+        <div className="show-mobile" style={{ position: 'absolute', top: '20px', right: '20px' }}>
+           <button 
+             onClick={() => setIsMobileOpen(false)}
+             style={{ background: '#f1f5f9', border: 'none', borderRadius: '50%', padding: '8px', cursor: 'pointer' }}
+           >
+             <X size={20} />
+           </button>
+        </div>
+
         <div style={{ marginBottom: '50px', padding: '0 10px' }}>
           <h2 style={{ fontSize: '1.5rem', fontWeight: '800', color: 'var(--primary)', marginBottom: '4px' }}>Admin Panel</h2>
           <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Premium Dashboard v2.0</p>
@@ -42,7 +113,7 @@ export default function AdminSidebar({ activeTab, setActiveTab }: SidebarProps) 
             return (
               <button
                 key={item.id}
-                onClick={() => setActiveTab(item.id)}
+                onClick={() => handleTabClick(item.id)}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
@@ -103,49 +174,6 @@ export default function AdminSidebar({ activeTab, setActiveTab }: SidebarProps) 
           </button>
         </div>
       </aside>
-
-      {/* Bottom Nav - Only on Mobile */}
-      <nav className="mobile-bottom-nav">
-        {menuItems.map((item) => {
-          const Icon = item.icon;
-          const isActive = activeTab === item.id;
-          return (
-            <button
-              key={item.id}
-              onClick={() => setActiveTab(item.id)}
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                gap: '4px',
-                background: 'none',
-                border: 'none',
-                color: isActive ? 'var(--primary)' : 'var(--text-secondary)',
-                flex: 1
-              }}
-            >
-              <Icon size={24} strokeWidth={isActive ? 2.5 : 2} />
-              <span style={{ fontSize: '0.7rem', fontWeight: isActive ? '700' : '500' }}>{item.label}</span>
-            </button>
-          );
-        })}
-        <button
-          onClick={() => logout()}
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: '4px',
-            background: 'none',
-            border: 'none',
-            color: '#ef4444',
-            flex: 1
-          }}
-        >
-          <LogOut size={24} />
-          <span style={{ fontSize: '0.7rem' }}>Logout</span>
-        </button>
-      </nav>
     </>
   );
 }

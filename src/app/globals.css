@@ -189,14 +189,27 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .hide-mobile {
-  display: block;
+  display: block !important;
 }
 
 @media (max-width: 768px) {
   .show-mobile {
-    display: flex !important;
+    display: block !important;
   }
   .hide-mobile {
     display: none !important;
   }
+  
+  .flex-mobile {
+    display: flex !important;
+  }
+}
+
+@keyframes slideIn {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
+}
+
+.admin-drawer {
+  animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }

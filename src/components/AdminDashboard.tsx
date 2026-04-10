@@ -61,7 +61,7 @@ export default function AdminDashboard({ products, categories }: AdminDashboardP
         flexGrow: 1, 
         width: '100%',
         padding: 'clamp(16px, 5vw, 40px)',
-        paddingBottom: '100px' // Space for mobile bottom nav
+        paddingTop: 'clamp(80px, 12vw, 40px)' // Space for mobile hamburger bar
       }}>
         <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
           <header style={{ marginBottom: 'clamp(20px, 6vw, 40px)' }}>
