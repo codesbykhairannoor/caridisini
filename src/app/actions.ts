@@ -193,12 +193,20 @@ async function resolveUrl(url: string): Promise<string> {
   }
 }
 
+const USER_AGENTS = [
+  'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
+  'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
+  'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
+  'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+  'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:122.0) Gecko/20100101 Firefox/122.0'
+];
+
 // Unified data extractor from HTML content using Cheerio
 function extractMetadata($: cheerio.CheerioAPI) {
   const getMeta = (prop: string) => $(`meta[property="${prop}"]`).attr('content') || 
                                    $(`meta[name="${prop}"]`).attr('content');
   
-  const title = getMeta('og:title') || $('title').text() || "";
+  const title = (getMeta('og:title') || $('title').text() || "").trim();
   const imageUrl = getMeta('og:image') || "";
   let description = getMeta('description') || "";
   let price = "";
@@ -217,27 +225,22 @@ function extractMetadata($: cheerio.CheerioAPI) {
         const offers = json.offers;
         if (offers) {
           if (offers["@type"] === "AggregateOffer") {
-            // Shopee Range found
             const low = offers.lowPrice || offers.price;
             const high = offers.highPrice;
             if (low && high && low !== high) {
               const minStr = parseFloat(low).toLocaleString('id-ID').replace(',00', '');
               const maxStr = parseFloat(high).toLocaleString('id-ID').replace(',00', '');
               price = `${minStr} - ${maxStr}`;
-              // For range products, original price is complex, but we'll try to find if there's an even higher base price
-              // For now, we prioritize showing the active range.
               originalPrice = ""; 
             } else if (low) {
               price = parseFloat(low).toLocaleString('id-ID').replace(',00', '');
             }
           } else {
-            // Flat price
             const p = offers.price;
             if (p) price = parseFloat(p).toLocaleString('id-ID').replace(',00', '');
           }
         }
         
-        // Detailed images and description
         if (json.image) {
           if (Array.isArray(json.image)) {
             images = [...new Set([...images, ...json.image])];
@@ -262,14 +265,12 @@ function extractMetadata($: cheerio.CheerioAPI) {
     } catch (e) {}
   });
 
-  // Fallback for price from description regex (handles "Rp 100.000 - Rp 200.000")
+  // Fallback for price from description regex
   if (!price) {
     const desc = getMeta('description') || "";
-    // Match first occurance of price
     const matches = [...desc.matchAll(/Rp\s?([0-9.,]+)/gi)];
     if (matches.length > 0) {
       price = matches[0][1].replace(/[,.]00$/, '');
-      // If there's a second price, it might be the high range or original price
       if (matches.length > 1) {
         const secondPrice = matches[1][1].replace(/[,.]00$/, '');
         if (secondPrice !== price) originalPrice = secondPrice;
@@ -277,13 +278,11 @@ function extractMetadata($: cheerio.CheerioAPI) {
     }
   }
 
-  // Price sanitization: swap if price > originalPrice (Shopee sometimes lists high-low in desc)
+  // Price sanitization
   if (price && originalPrice) {
     const pVal = parseInt(price.replace(/\D/g, ''));
     const oVal = parseInt(originalPrice.replace(/\D/g, ''));
     if (pVal > oVal) {
-      // If the "price" we found is higher than "originalPrice", the original was probably the lower one or we found a range.
-      // We take the lower one as the active price.
       const temp = price;
       price = originalPrice;
       originalPrice = temp;
@@ -302,27 +301,42 @@ function extractMetadata($: cheerio.CheerioAPI) {
 }
 
 export async function scrapeProductData(url: string) {
-  const finalUrl = await resolveUrl(url);
+  // 1. Sanitize URL (Remove tracking but keep product path)
+  let cleanUrl = url.split('?')[0];
+  if (url.includes('shope.ee')) cleanUrl = url; // Shortlinks need full form
+
+  const finalUrl = await resolveUrl(cleanUrl);
+  const randomUA = USER_AGENTS[Math.floor(Math.random() * USER_AGENTS.length)];
   
   // --- STAGE 1: FAST SCRAPE (AXIOS) ---
   try {
     const response = await axios.get(finalUrl, {
       headers: {
-        'User-Agent': 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-        'Referer': 'https://shopee.co.id/'
+        'User-Agent': randomUA,
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+        'Accept-Language': 'id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7',
+        'Cache-Control': 'max-age=0',
+        'Sec-Ch-Ua': '"Not A(Brand";v="99", "Google Chrome";v="121", "Chromium";v="121"',
+        'Sec-Ch-Ua-Mobile': '?0',
+        'Sec-Ch-Ua-Platform': '"Windows"',
+        'Sec-Fetch-Dest': 'document',
+        'Sec-Fetch-Mode': 'navigate',
+        'Sec-Fetch-Site': 'none',
+        'Sec-Fetch-User': '?1',
+        'Upgrade-Insecure-Requests': '1',
+        'Referer': 'https://www.google.com/'
       },
-      timeout: 5000
+      timeout: 8000
     });
 
     const $ = cheerio.load(response.data);
     const data = extractMetadata($);
 
-    if (data.title && data.imageUrl && !data.title.toLowerCase().includes('login')) {
+    if (data.title && data.imageUrl && !data.title.toLowerCase().includes('shopee indonesia')) {
       return { success: true, data };
     }
   } catch (err) {
-    console.log("Stage 1 failed, moving to Stage 2...");
+    console.log("Stage 1 (Axios) blocked or failed, attempting Stage 2 (Playwright Stealth)...");
   }
 
   // --- STAGE 2: DEEP SCAN (PLAYWRIGHT) ---
