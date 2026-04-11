@@ -28,16 +28,16 @@ export default function PixelViewContent({ id, title, price, category }: PixelVi
     // 1. Browser (Pixel)
     fpixel.event('ViewContent', eventData, eventId);
 
-    // 2. Server (CAPI) - Background fetch to avoid NProgress
-    fetch('/api/meta-track', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
+    // 2. Server (CAPI) - Total Silent Tracking via sendBeacon
+    if (typeof navigator !== 'undefined' && navigator.sendBeacon) {
+      const data = JSON.stringify({
         eventName: 'ViewContent',
         eventID: eventId,
         customData: eventData
-      })
-    }).catch(err => console.error('[Meta CAPI] Error:', err));
+      });
+      const blob = new Blob([data], { type: 'application/json' });
+      navigator.sendBeacon('/api/meta-track', blob);
+    }
 
   }, [id, title, price, category]);
 

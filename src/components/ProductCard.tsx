@@ -29,7 +29,7 @@ export default function ProductCard({
   categoryName,
 }: ProductProps) {
   
-  const trackAddToCart = async (source: string) => {
+  const trackAddToCart = (source: string) => {
     const eventId = fpixel.generateEventId();
     const priceValue = parseFloat(price.replace(/\D/g, ''));
     
@@ -45,16 +45,16 @@ export default function ProductCard({
     // 1. Browser Event
     fpixel.event('AddToCart', eventData, eventId);
 
-    // 2. Server Event - Background fetch to avoid NProgress
-    fetch('/api/meta-track', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
+    // 2. Server Event - Total Silent Tracking via sendBeacon
+    if (typeof navigator !== 'undefined' && navigator.sendBeacon) {
+      const data = JSON.stringify({
         eventName: 'AddToCart',
         eventID: eventId,
         customData: eventData
-      })
-    }).catch(err => console.error('[Meta CAPI] Error:', err));
+      });
+      const blob = new Blob([data], { type: 'application/json' });
+      navigator.sendBeacon('/api/meta-track', blob);
+    }
     
     // Legacy tracking
     trackProductClick(id);

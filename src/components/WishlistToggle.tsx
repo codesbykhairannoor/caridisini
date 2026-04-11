@@ -18,7 +18,7 @@ export default function WishlistToggle({ productId, productTitle, productPrice }
     setIsSaved(isInWishlist(productId));
   }, [productId]);
 
-  const handleToggle = async (e: React.MouseEvent) => {
+  const handleToggle = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
 
@@ -31,33 +31,33 @@ export default function WishlistToggle({ productId, productTitle, productPrice }
 
       // --- Meta Tracking (AddToWishlist) ---
       const eventId = fpixel.generateEventId();
-      const price = parseFloat(productPrice.replace(/\D/g, ''));
+      const priceValue = parseFloat(productPrice.replace(/\D/g, ''));
       
       // 1. Browser (Pixel)
       fpixel.event('AddToWishlist', {
         content_ids: [productId.toString()],
         content_name: productTitle,
         content_type: 'product',
-        value: price,
+        value: priceValue,
         currency: 'IDR'
       }, eventId);
 
-      // 2. Server (CAPI) - Background fetch to avoid triggering NProgress/Loading bars
-      fetch('/api/meta-track', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
+      // 2. Server (CAPI) - Total Silent Tracking via sendBeacon
+      if (typeof navigator !== 'undefined' && navigator.sendBeacon) {
+        const data = JSON.stringify({
           eventName: 'AddToWishlist',
           eventID: eventId,
           customData: {
             content_ids: [productId.toString()],
             content_name: productTitle,
             content_type: 'product',
-            value: price,
+            value: priceValue,
             currency: 'IDR'
           }
-        })
-      }).catch(err => console.error('[Meta CAPI] Event Error:', err));
+        });
+        const blob = new Blob([data], { type: 'application/json' });
+        navigator.sendBeacon('/api/meta-track', blob);
+      }
     }
   };
 
