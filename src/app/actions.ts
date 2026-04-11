@@ -8,6 +8,65 @@ import { cookies } from "next/headers";
 import fs from "fs/promises";
 import path from "path";
 import { generateProductContent } from "@/lib/ai";
+import { FB_PIXEL_ID } from "@/lib/fpixel";
+import { headers as getHeaders } from "next/headers";
+
+const META_ACCESS_TOKEN = process.env.META_ACCESS_TOKEN || "EAAW4ZCYobuK0BRAYLk2n2jV2kTIclGJmsThnXNLpWYsPlqSzFj0mqo48blnleiVflXctRVOPfsRv3SGM3clg2ZA96bXxBjTteyKon4ShHgtLEwZC8RrGEvYa1ZCpSANCPDFoQZA02KtN79WdmS3sr7GZABZCbXvVYv26KtmsqYmndhq2CFByCsXrSxPUZBMmkphSgwZDZD";
+
+export async function trackMetaEvent(
+  eventName: string,
+  eventID: string,
+  customData: any = {},
+  userDataOverride: any = {}
+) {
+  try {
+    const headersList = await getHeaders();
+    const cookieStore = await cookies();
+    
+    // Identifiers
+    const ipAddress = headersList.get('x-forwarded-for')?.split(',')[0] || headersList.get('x-real-ip') || '127.0.0.1';
+    const userAgent = headersList.get('user-agent') || 'Unknown';
+    const fbp = cookieStore.get('_fbp')?.value;
+    const fbc = cookieStore.get('_fbc')?.value;
+    const externalId = cookieStore.get('external_id')?.value;
+
+    const eventData = {
+      data: [
+        {
+          event_name: eventName,
+          event_time: Math.floor(Date.now() / 1000),
+          event_id: eventID,
+          action_source: "website",
+          event_source_url: headersList.get('referer') || "https://caridisni.shop",
+          user_data: {
+            client_ip_address: ipAddress,
+            client_user_agent: userAgent,
+            fbp,
+            fbc,
+            external_id: externalId,
+            ...userDataOverride
+          },
+          custom_data: customData
+        }
+      ]
+    };
+
+    const response = await fetch(`https://graph.facebook.com/v19.0/${FB_PIXEL_ID}/events?access_token=${META_ACCESS_TOKEN}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(eventData)
+    });
+
+    const result = await response.json();
+    console.log(`[Meta CAPI] Event ${eventName} sent. Success:`, !result.error);
+    if (result.error) console.error('[Meta CAPI] Error:', result.error);
+    
+    return { success: !result.error };
+  } catch (error: any) {
+    console.error('[Meta CAPI] Server Error:', error.message);
+    return { success: false };
+  }
+}
 
 export async function addProduct(formData: FormData) {
   const title = formData.get('title') as string;

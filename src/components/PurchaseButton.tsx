@@ -1,7 +1,7 @@
 'use client';
 
 import { ShoppingBag } from "lucide-react";
-import { trackProductClick } from "@/app/actions";
+import { trackProductClick, trackMetaEvent } from "@/app/actions";
 import * as fpixel from '@/lib/fpixel';
 
 interface PurchaseButtonProps {
@@ -13,18 +13,26 @@ interface PurchaseButtonProps {
 }
 
 export default function PurchaseButton({ productId, url, variant = 'default', title, price }: PurchaseButtonProps) {
-  const handleClick = () => {
-    trackProductClick(productId);
-
-    // Track Facebook Pixel Event
-    fpixel.event('Purchase', {
-      value: price ? parseFloat(price.replace(/\D/g, '')) : 0,
+  const handleClick = async () => {
+    const eventId = fpixel.generateEventId();
+    const priceValue = price ? parseFloat(price.replace(/\D/g, '')) : 0;
+    
+    const eventData = {
+      value: priceValue,
       currency: 'IDR',
       content_name: title || 'Product Detail Purchase',
       content_ids: [productId.toString()],
-      content_type: 'product'
-    });
+      content_type: 'product',
+      contents: [{ id: productId.toString(), quantity: 1 }]
+    };
 
+    // 1. Browser Event
+    fpixel.event('AddToCart', eventData, eventId);
+
+    // 2. Server Event
+    trackMetaEvent('AddToCart', eventId, eventData);
+
+    trackProductClick(productId);
     window.open(url, '_blank', 'noopener,noreferrer');
   };
 

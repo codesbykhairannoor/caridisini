@@ -52,6 +52,29 @@ export default function CategoryFilter({ categories, selectedCategory, onSelectC
         Semua
       </button>
 
+      <button
+        onClick={() => onSelectCategory('Favorit')}
+        style={{
+          padding: '10px 24px',
+          borderRadius: '50px',
+          border: '1px solid',
+          borderColor: selectedCategory === 'Favorit' ? '#ff4d6d' : 'var(--border-color)',
+          background: selectedCategory === 'Favorit' ? '#ff4d6d' : 'white',
+          color: selectedCategory === 'Favorit' ? 'white' : '#ff4d6d',
+          fontWeight: '700',
+          fontSize: '0.9rem',
+          cursor: 'pointer',
+          whiteSpace: 'nowrap',
+          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+          boxShadow: selectedCategory === 'Favorit' ? '0 8px 15px -4px rgba(255, 77, 109, 0.3)' : 'none',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '6px'
+        }}
+      >
+        Favorit 💖
+      </button>
+
       {categories.map((cat) => (
         <button
           key={cat.id}

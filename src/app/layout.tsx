@@ -31,6 +31,7 @@ export const metadata: Metadata = {
 
 import NextTopLoader from 'nextjs-toploader';
 import FacebookPixel from '@/components/FacebookPixel';
+import InitExternalId from '@/components/InitExternalId';
 import { FB_PIXEL_ID } from '@/lib/fpixel';
 
 export default function RootLayout({
@@ -42,6 +43,8 @@ export default function RootLayout({
     <html lang="id" data-theme="light" style={{ scrollBehavior: 'smooth' }}>
       <body>
         <FacebookPixel />
+        <InitExternalId />
+
         <noscript>
           <img
             height="1"

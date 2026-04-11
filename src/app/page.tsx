@@ -1,11 +1,11 @@
 import ProductCard from "@/components/ProductCard";
 import ProductContainer from "@/components/ProductContainer";
+import SearchBar from "@/components/SearchBar";
 import prisma from "@/lib/prisma";
 import Image from "next/image";
 import { Search, TrendingUp, Sparkles, Zap, ShieldCheck } from "lucide-react";
 
 export const revalidate = 0;
-
 
 export default async function Home() {
   const products = await prisma.product.findMany({
@@ -57,35 +57,7 @@ export default async function Home() {
             </h1>
 
             <div className="animate-fade-up" style={{ maxWidth: '720px', margin: '48px auto 0' }}>
-               <div style={{ 
-                 position: 'relative',
-                 background: 'white',
-                 borderRadius: '100px',
-                 padding: '8px',
-                 boxShadow: '0 30px 60px -15px rgba(238, 77, 45, 0.2)',
-                 display: 'flex',
-                 alignItems: 'center',
-                 border: '1px solid rgba(238, 77, 45, 0.1)'
-               }}>
-                 <div style={{ paddingLeft: '24px', marginRight: '8px' }}>
-                   <Search size={22} color="var(--text-secondary)" />
-                 </div>
-                 <input 
-                   type="text" 
-                   placeholder="Cari barang berdiskon di Shopee..." 
-                   style={{ 
-                     border: 'none', 
-                     padding: '16px 0', 
-                     fontSize: '1.1rem', 
-                     width: '100%', 
-                     outline: 'none',
-                     background: 'transparent'
-                   }}
-                 />
-                 <button className="btn btn-primary" style={{ padding: '16px 36px', fontSize: '1rem' }}>
-                   Cari Sekarang
-                 </button>
-               </div>
+               <SearchBar />
 
                {/* Trust Badges */}
                <div className="animate-fade-up" style={{ display: 'flex', justifyContent: 'center', gap: '24px', marginTop: '32px', opacity: 0.7 }}>

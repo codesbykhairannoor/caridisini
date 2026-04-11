@@ -3,8 +3,9 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { Star, ShoppingCart, Eye } from 'lucide-react';
-import { trackProductClick } from '@/app/actions';
+import { trackProductClick, trackMetaEvent } from '@/app/actions';
 import * as fpixel from '@/lib/fpixel';
+import WishlistToggle from './WishlistToggle';
 
 interface ProductProps {
   id: number;
@@ -27,26 +28,39 @@ export default function ProductCard({
   shopeeUrl,
   categoryName,
 }: ProductProps) {
-  const handleShopeeClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    trackProductClick(id);
-
-    // Track Facebook Pixel Event
-    fpixel.event('Purchase', {
-      value: parseFloat(price.replace(/\D/g, '')),
+  
+  const trackAddToCart = async (source: string) => {
+    const eventId = fpixel.generateEventId();
+    const priceValue = parseFloat(price.replace(/\D/g, ''));
+    
+    const eventData = {
+      value: priceValue,
       currency: 'IDR',
       content_name: title,
       content_ids: [id.toString()],
-      content_type: 'product'
-    });
-    
-    fpixel.event('ClickShopee', {
-      product_name: title,
-      product_id: id
-    });
+      content_type: 'product',
+      contents: [{ id: id.toString(), quantity: 1 }]
+    };
 
+    // 1. Browser Event
+    fpixel.event('AddToCart', eventData, eventId);
+
+    // 2. Server Event
+    await trackMetaEvent('AddToCart', eventId, eventData);
+    
+    // Legacy tracking
+    trackProductClick(id);
+  };
+
+  const handleShopeeClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    trackAddToCart('Beli Sekarang');
     window.open(shopeeUrl, '_blank', 'noopener,noreferrer');
+  };
+
+  const handleDetailClick = () => {
+    trackAddToCart('Lihat Detail');
   };
 
   return (
@@ -73,6 +87,11 @@ export default function ProductCard({
             sizes="(max-width: 768px) 50vw, 33vw"
           />
           
+          {/* Wishlist Toggle Overlay */}
+          <div style={{ position: 'absolute', top: '12px', right: '12px', zIndex: 20 }}>
+            <WishlistToggle productId={id} productTitle={title} productPrice={price} />
+          </div>
+
           {/* Discount Badge */}
           {originalPrice && (
             <div style={{
@@ -95,7 +114,7 @@ export default function ProductCard({
           {categoryName && (
             <div style={{
               position: 'absolute',
-              top: '12px',
+              bottom: '12px',
               right: '12px',
               background: 'rgba(255, 255, 255, 0.9)',
               backdropFilter: 'blur(8px)',
@@ -186,6 +205,7 @@ export default function ProductCard({
         </button>
         <Link 
           href={`/product/${id}`}
+          onClick={handleDetailClick}
           style={{ 
             width: '100%', 
             padding: '10px 0', 

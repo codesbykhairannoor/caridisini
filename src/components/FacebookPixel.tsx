@@ -28,7 +28,12 @@ const FacebookPixelComponent = () => {
             t.src=v;s=b.getElementsByTagName(e)[0];
             s.parentNode.insertBefore(t,s)}(window, document,'script',
             'https://connect.facebook.net/en_US/fbevents.js');
-            fbq('init', '${fpixel.FB_PIXEL_ID}');
+            
+            // Get external_id from cookie if exists
+            const match = document.cookie.match(new RegExp('(^| )external_id=([^;]+)'));
+            const external_id = match ? match[2] : undefined;
+            
+            fbq('init', '${fpixel.FB_PIXEL_ID}', external_id ? { external_id } : {});
             fbq('track', 'PageView');
           `,
         }}
