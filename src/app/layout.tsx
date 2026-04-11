@@ -29,7 +29,6 @@ export const metadata: Metadata = {
   }
 };
 
-import NextTopLoader from 'nextjs-toploader';
 import FacebookPixel from '@/components/FacebookPixel';
 import InitExternalId from '@/components/InitExternalId';
 import { FB_PIXEL_ID } from '@/lib/fpixel';
@@ -53,17 +52,6 @@ export default function RootLayout({
             src={`https://www.facebook.com/tr?id=${FB_PIXEL_ID}&ev=PageView&noscript=1`}
           />
         </noscript>
-        <NextTopLoader 
-          color="#EE4D2D"
-          initialPosition={0.08}
-          crawlSpeed={200}
-          height={3}
-          crawl={true}
-          showSpinner={false}
-          easing="ease"
-          speed={200}
-          shadow="0 0 10px #EE4D2D,0 0 5px #EE4D2D"
-        />
         {children}
       </body>
     </html>
