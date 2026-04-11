@@ -29,11 +29,22 @@ const FacebookPixelComponent = () => {
             s.parentNode.insertBefore(t,s)}(window, document,'script',
             'https://connect.facebook.net/en_US/fbevents.js');
             
-            // Get external_id from cookie if exists
-            const match = document.cookie.match(new RegExp('(^| )external_id=([^;]+)'));
-            const external_id = match ? match[2] : undefined;
+            // Helper to get cookies
+            function getCookie(name) {
+              const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+              return match ? match[2] : undefined;
+            }
+
+            const external_id = getCookie('external_id');
+            const fbp = getCookie('_fbp');
+            const fbc = getCookie('_fbc');
             
-            fbq('init', '${fpixel.FB_PIXEL_ID}', external_id ? { external_id } : {});
+            const userData = {};
+            if (external_id) userData.external_id = external_id;
+            if (fbp) userData.fbp = fbp;
+            if (fbc) userData.fbc = fbc;
+            
+            fbq('init', '${fpixel.FB_PIXEL_ID}', userData);
             fbq('track', 'PageView');
           `,
         }}

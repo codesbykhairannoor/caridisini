@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import { Search } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import * as fpixel from '@/lib/fpixel';
-import { trackMetaEvent } from '@/app/actions';
 
 export default function SearchBar() {
   const router = useRouter();
@@ -23,14 +22,25 @@ export default function SearchBar() {
     const eventId = fpixel.generateEventId();
     const eventData = {
       search_string: query.trim(),
-      content_category: 'Product Search'
+      content_category: 'Product Search',
+      value: 0,
+      currency: 'IDR',
+      content_ids: []
     };
 
     // 1. Browser Event
     fpixel.event('Search', eventData, eventId);
 
-    // 2. Server Event
-    trackMetaEvent('Search', eventId, eventData);
+    // 2. Server Event (CAPI) - Total Silent Tracking
+    if (typeof navigator !== 'undefined' && navigator.sendBeacon) {
+      const data = JSON.stringify({
+        eventName: 'Search',
+        eventID: eventId,
+        customData: eventData
+      });
+      const blob = new Blob([data], { type: 'application/json' });
+      navigator.sendBeacon('/api/meta-track', blob);
+    }
 
     // Update URL
     router.push(`/?q=${encodeURIComponent(query.trim())}#produk`);
