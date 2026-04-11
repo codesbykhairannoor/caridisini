@@ -2,7 +2,6 @@
 
 import { useEffect } from 'react';
 import * as fpixel from '@/lib/fpixel';
-import { trackMetaEvent } from '@/app/actions';
 
 interface PixelViewContentProps {
   id: number;
@@ -29,8 +28,16 @@ export default function PixelViewContent({ id, title, price, category }: PixelVi
     // 1. Browser (Pixel)
     fpixel.event('ViewContent', eventData, eventId);
 
-    // 2. Server (CAPI)
-    trackMetaEvent('ViewContent', eventId, eventData);
+    // 2. Server (CAPI) - Background fetch to avoid NProgress
+    fetch('/api/meta-track', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        eventName: 'ViewContent',
+        eventID: eventId,
+        customData: eventData
+      })
+    }).catch(err => console.error('[Meta CAPI] Error:', err));
 
   }, [id, title, price, category]);
 

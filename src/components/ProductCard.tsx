@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { Star, ShoppingCart, Eye } from 'lucide-react';
-import { trackProductClick, trackMetaEvent } from '@/app/actions';
+import { trackProductClick } from '@/app/actions';
 import * as fpixel from '@/lib/fpixel';
 import WishlistToggle from './WishlistToggle';
 
@@ -45,8 +45,16 @@ export default function ProductCard({
     // 1. Browser Event
     fpixel.event('AddToCart', eventData, eventId);
 
-    // 2. Server Event
-    await trackMetaEvent('AddToCart', eventId, eventData);
+    // 2. Server Event - Background fetch to avoid NProgress
+    fetch('/api/meta-track', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        eventName: 'AddToCart',
+        eventID: eventId,
+        customData: eventData
+      })
+    }).catch(err => console.error('[Meta CAPI] Error:', err));
     
     // Legacy tracking
     trackProductClick(id);

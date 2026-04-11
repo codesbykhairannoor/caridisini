@@ -60,7 +60,8 @@ export default function ProductContainer({ initialProducts, categories }: Produc
     // 2. Search Filter
     const matchesSearch = searchQuery 
       ? p.title.toLowerCase().includes(searchQuery) || 
-        p.description?.toLowerCase().includes(searchQuery)
+        p.category?.name.toLowerCase().includes(searchQuery) ||
+        (searchQuery.length > 3 && new RegExp(`\\b${searchQuery}\\b`, 'i').test(p.description || ''))
       : true;
 
     return matchesCategory && matchesSearch;

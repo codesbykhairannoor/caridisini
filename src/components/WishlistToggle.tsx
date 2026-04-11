@@ -4,7 +4,6 @@ import React, { useState, useEffect } from 'react';
 import { Heart } from 'lucide-react';
 import { isInWishlist, addToWishlist, removeFromWishlist } from '@/lib/wishlist';
 import * as fpixel from '@/lib/fpixel';
-import { trackMetaEvent } from '@/app/actions';
 
 interface WishlistToggleProps {
   productId: number;
@@ -43,14 +42,22 @@ export default function WishlistToggle({ productId, productTitle, productPrice }
         currency: 'IDR'
       }, eventId);
 
-      // 2. Server (CAPI)
-      await trackMetaEvent('AddToWishlist', eventId, {
-        content_ids: [productId.toString()],
-        content_name: productTitle,
-        content_type: 'product',
-        value: price,
-        currency: 'IDR'
-      });
+      // 2. Server (CAPI) - Background fetch to avoid triggering NProgress/Loading bars
+      fetch('/api/meta-track', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          eventName: 'AddToWishlist',
+          eventID: eventId,
+          customData: {
+            content_ids: [productId.toString()],
+            content_name: productTitle,
+            content_type: 'product',
+            value: price,
+            currency: 'IDR'
+          }
+        })
+      }).catch(err => console.error('[Meta CAPI] Event Error:', err));
     }
   };
 
