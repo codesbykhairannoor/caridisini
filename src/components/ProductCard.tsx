@@ -100,11 +100,33 @@ export default function ProductCard({
             <WishlistToggle productId={id} productTitle={title} productPrice={price} />
           </div>
 
+          {/* Etalase / Showcase Number Badge */}
+          <div style={{
+            position: 'absolute',
+            top: '12px',
+            left: '12px',
+            background: 'rgba(15, 23, 42, 0.75)',
+            backdropFilter: 'blur(8px)',
+            color: 'white',
+            padding: '4px 12px',
+            borderRadius: '50px',
+            fontSize: '0.7rem',
+            fontWeight: '800',
+            zIndex: 10,
+            display: 'flex',
+            alignItems: 'center',
+            gap: '4px',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+            border: '1px solid rgba(255,255,255,0.1)'
+          }}>
+            <span style={{ opacity: 0.8 }}>No.</span> {id}
+          </div>
+
           {/* Discount Badge */}
           {originalPrice && (
             <div style={{
               position: 'absolute',
-              top: '12px',
+              top: '42px',
               left: '12px',
               background: 'var(--primary)',
               color: 'white',

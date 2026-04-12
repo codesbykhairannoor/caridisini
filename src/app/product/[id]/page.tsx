@@ -117,6 +117,21 @@ export default async function ProductDetailPage({
           <span style={{ color: '#0F172A', fontWeight: '650', maxWidth: '200px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
             {product.title}
           </span>
+          <div style={{ 
+            marginLeft: 'auto', 
+            background: 'var(--primary-light)', 
+            color: 'var(--primary)', 
+            padding: '4px 12px', 
+            borderRadius: '50px', 
+            fontSize: '0.75rem', 
+            fontWeight: '900',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '4px',
+            boxShadow: '0 2px 8px rgba(238, 77, 45, 0.1)'
+          }}>
+            <span style={{ opacity: 0.7 }}>No.</span> Etalase {product.id}
+          </div>
         </nav>
 
         {/* Main Product Layout: 3 Columns on Large Screens */}
