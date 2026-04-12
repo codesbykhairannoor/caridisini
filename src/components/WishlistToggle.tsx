@@ -42,9 +42,11 @@ export default function WishlistToggle({ productId, productTitle, productPrice }
         currency: 'IDR'
       }, eventId);
 
-      // 2. Server (CAPI) - Total Silent Tracking via sendBeacon
-      if (typeof navigator !== 'undefined' && navigator.sendBeacon) {
-        const data = JSON.stringify({
+      // 2. Server (CAPI) - Fetch for Transparency & Monitoring
+      fetch('/api/meta-track', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
           eventName: 'AddToWishlist',
           eventID: eventId,
           customData: {
@@ -54,10 +56,12 @@ export default function WishlistToggle({ productId, productTitle, productPrice }
             value: priceValue,
             currency: 'IDR'
           }
-        });
-        const blob = new Blob([data], { type: 'application/json' });
-        navigator.sendBeacon('/api/meta-track', blob);
-      }
+        }),
+        keepalive: true
+      })
+      .then(res => res.json())
+      .then(data => console.log('[CAPI Response] AddToWishlist:', data))
+      .catch(err => console.error('[CAPI Error] AddToWishlist:', err));
     }
   };
 

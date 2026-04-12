@@ -31,16 +31,20 @@ export default function SearchBar() {
     // 1. Browser Event
     fpixel.event('Search', eventData, eventId);
 
-    // 2. Server Event (CAPI) - Total Silent Tracking
-    if (typeof navigator !== 'undefined' && navigator.sendBeacon) {
-      const data = JSON.stringify({
+    // 2. Server (CAPI) - Fetch for Transparency & Monitoring
+    fetch('/api/meta-track', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
         eventName: 'Search',
         eventID: eventId,
         customData: eventData
-      });
-      const blob = new Blob([data], { type: 'application/json' });
-      navigator.sendBeacon('/api/meta-track', blob);
-    }
+      }),
+      keepalive: true
+    })
+    .then(res => res.json())
+    .then(data => console.log('[CAPI Response] Search:', data))
+    .catch(err => console.error('[CAPI Error] Search:', err));
 
     // Update URL
     router.push(`/?q=${encodeURIComponent(query.trim())}#produk`);
