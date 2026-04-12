@@ -229,7 +229,7 @@ export default async function ProductDetailPage({
               {/* Mobile/Tablet Price Block (Hidden on wide desktop) */}
               <div className="show-tablet-price" style={{ marginBottom: '40px', padding: '24px', background: 'white', border: '1px solid #f1f5f9', borderRadius: '20px' }}>
                   <p style={{ fontSize: '0.9rem', color: '#64748b', marginBottom: '8px', fontWeight: '600' }}>Harga Terbaik:</p>
-                  <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px', flexWrap: 'wrap' }}>
+                  <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px', flexWrap: 'wrap', marginBottom: '20px' }}>
                     <span style={{ fontSize: 'clamp(1.75rem, 5vw, 2.15rem)', fontWeight: '800', color: 'var(--primary)', letterSpacing: '-1.5px', lineHeight: '1.1' }}>
                       Rp {product.price}
                     </span>
@@ -239,6 +239,7 @@ export default async function ProductDetailPage({
                       </span>
                     )}
                   </div>
+                  <PurchaseButton productId={productId} url={product.shopeeUrl} title={product.title} price={product.price} />
               </div>
 
               {/* Description Section */}
