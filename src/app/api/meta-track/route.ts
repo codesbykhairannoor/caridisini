@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
     const fbc = cookieStore.get('_fbc')?.value;
     const externalId = cookieStore.get('external_id')?.value;
 
-    const eventData = {
+    const payload = {
       data: [
         {
           event_name: eventName,
@@ -27,7 +27,6 @@ export async function POST(req: NextRequest) {
           event_id: eventID,
           action_source: "website",
           event_source_url: headersList.get('referer') || "https://caridisni.shop",
-          ...(META_TEST_EVENT_CODE ? { test_event_code: META_TEST_EVENT_CODE } : {}),
           user_data: {
             client_ip_address: ipAddress,
             client_user_agent: userAgent,
@@ -38,19 +37,24 @@ export async function POST(req: NextRequest) {
           },
           custom_data: customData
         }
-      ]
+      ],
+      ...(META_TEST_EVENT_CODE ? { test_event_code: META_TEST_EVENT_CODE } : {})
     };
 
+    console.log(`[CAPI] Sending event: ${eventName} (${eventID})`);
+    
     const response = await fetch(`https://graph.facebook.com/v19.0/${FB_PIXEL_ID}/events?access_token=${META_ACCESS_TOKEN}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(eventData)
+      body: JSON.stringify(payload)
     });
 
     const result = await response.json();
+    console.log(`[CAPI] Meta Response for ${eventName}:`, JSON.stringify(result));
     
-    return NextResponse.json({ success: !result.error });
+    return NextResponse.json({ success: !result.error, result });
   } catch (error: any) {
+    console.error("[CAPI] Error:", error.message);
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 }
