@@ -3,6 +3,7 @@ import { FB_PIXEL_ID } from '@/lib/fpixel';
 import { cookies, headers } from 'next/headers';
 
 const META_ACCESS_TOKEN = process.env.META_ACCESS_TOKEN || "EAAW4ZCYobuK0BRAYLk2n2jV2kTIclGJmsThnXNLpWYsPlqSzFj0mqo48blnleiVflXctRVOPfsRv3SGM3clg2ZA96bXxBjTteyKon4ShHgtLEwZC8RrGEvYa1ZCpSANCPDFoQZA02KtN79WdmS3sr7GZABZCbXvVYv26KtmsqYmndhq2CFByCsXrSxPUZBMmkphSgwZDZD";
+const META_TEST_EVENT_CODE = process.env.NEXT_PUBLIC_META_TEST_CODE || "TEST56548"; // Set to null/empty in production
 
 export async function POST(req: NextRequest) {
   try {
@@ -26,6 +27,7 @@ export async function POST(req: NextRequest) {
           event_id: eventID,
           action_source: "website",
           event_source_url: headersList.get('referer') || "https://caridisni.shop",
+          ...(META_TEST_EVENT_CODE ? { test_event_code: META_TEST_EVENT_CODE } : {}),
           user_data: {
             client_ip_address: ipAddress,
             client_user_agent: userAgent,
