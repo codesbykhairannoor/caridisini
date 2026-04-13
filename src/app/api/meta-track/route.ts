@@ -67,8 +67,8 @@ export async function POST(req: NextRequest) {
           },
           custom_data: customData
         }
-      ],
-      test_event_code: "TEST56548" // Temporary test code for debugging
+      ]
+      // Meta CAPI Production Mode - No test_event_code
     };
 
     const response = await fetch(`https://graph.facebook.com/v19.0/${FB_PIXEL_ID}/events?access_token=${META_ACCESS_TOKEN}`, {
