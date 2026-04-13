@@ -68,7 +68,7 @@ export async function POST(req: NextRequest) {
           custom_data: customData
         }
       ],
-      // No test_event_code in production build
+      test_event_code: "TEST56548" // Temporary test code for debugging
     };
 
     const response = await fetch(`https://graph.facebook.com/v19.0/${FB_PIXEL_ID}/events?access_token=${META_ACCESS_TOKEN}`, {
