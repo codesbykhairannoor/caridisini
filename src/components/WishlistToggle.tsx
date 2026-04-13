@@ -30,7 +30,7 @@ export default function WishlistToggle({ productId, productTitle, productPrice }
       setIsSaved(true);
 
       // --- Meta Tracking (AddToWishlist) ---
-      const eventId = fpixel.generateEventId();
+      const eventId = fpixel.generateEventId('AddToWishlist');
       const priceValue = parseFloat(productPrice.replace(/\D/g, ''));
       
       // 1. Browser (Pixel)

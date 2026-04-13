@@ -14,7 +14,7 @@ interface PurchaseButtonProps {
 
 export default function PurchaseButton({ productId, url, variant = 'default', title, price }: PurchaseButtonProps) {
   const handleClick = async () => {
-    const eventId = fpixel.generateEventId();
+    const eventId = fpixel.generateEventId('AddToCart');
     const priceValue = price ? parseFloat(price.replace(/\D/g, '')) : 0;
     
     const eventData = {

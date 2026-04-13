@@ -12,7 +12,7 @@ interface PixelViewContentProps {
 
 export default function PixelViewContent({ id, title, price, category }: PixelViewContentProps) {
   useEffect(() => {
-    const eventId = fpixel.generateEventId();
+    const eventId = fpixel.generateEventId('ViewContent');
     const priceValue = parseFloat(price.replace(/\D/g, ''));
     
     const eventData = {

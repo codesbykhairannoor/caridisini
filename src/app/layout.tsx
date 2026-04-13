@@ -31,6 +31,7 @@ export const metadata: Metadata = {
 
 import FacebookPixel from '@/components/FacebookPixel';
 import InitExternalId from '@/components/InitExternalId';
+import MetaParamBuilder from '@/components/MetaParamBuilder';
 import { FB_PIXEL_ID } from '@/lib/fpixel';
 
 export default function RootLayout({
@@ -43,6 +44,7 @@ export default function RootLayout({
       <body>
         <FacebookPixel />
         <InitExternalId />
+        <MetaParamBuilder />
 
         <noscript>
           <img

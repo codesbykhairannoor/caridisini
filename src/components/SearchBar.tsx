@@ -19,7 +19,7 @@ export default function SearchBar() {
     }
 
     // --- Meta Tracking (Search) ---
-    const eventId = fpixel.generateEventId();
+    const eventId = fpixel.generateEventId('Search');
     const eventData = {
       search_string: query.trim(),
       content_category: 'Product Search',

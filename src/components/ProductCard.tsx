@@ -30,7 +30,7 @@ export default function ProductCard({
 }: ProductProps) {
   
   const trackAddToCart = (source: string) => {
-    const eventId = fpixel.generateEventId();
+    const eventId = fpixel.generateEventId('AddToCart');
     const priceValue = parseFloat(price.replace(/\D/g, ''));
     
     const eventData = {

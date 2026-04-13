@@ -44,6 +44,7 @@ const FacebookPixelComponent = () => {
             if (fbp) userData.fbp = fbp;
             if (fbc) userData.fbc = fbc;
             
+            fbq('set', 'autoConfig', false, '${fpixel.FB_PIXEL_ID}');
             fbq('init', '${fpixel.FB_PIXEL_ID}', userData);
             fbq('track', 'PageView');
           `,

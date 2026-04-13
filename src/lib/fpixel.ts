@@ -13,6 +13,7 @@ export const event = (name: string, options = {}, eventID?: string) => {
   }
 };
 
-export const generateEventId = () => {
-  return 'event_' + Math.random().toString(36).substring(2, 15) + '_' + Date.now();
+export const generateEventId = (name: string) => {
+  const cleanName = name.replace(/\s+/g, '').toLowerCase();
+  return `cd-${cleanName}-${Date.now()}`;
 };
