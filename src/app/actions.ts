@@ -519,8 +519,8 @@ const ADMIN_PASS = process.env.ADMIN_PASS || "admin123";
 const AUTH_COOKIE = "caridisni_session";
 
 export async function login(formData: FormData) {
-  const email = formData.get('email') as string;
-  const password = formData.get('password') as string;
+  const email = (formData.get('email') as string)?.trim();
+  const password = (formData.get('password') as string)?.trim();
 
   if (email === ADMIN_EMAIL && password === ADMIN_PASS) {
     (await cookies()).set(AUTH_COOKIE, "true", { 
